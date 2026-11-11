@@ -1,0 +1,29 @@
+== benign_01: 0 alert
+== benign_02: 0 alert
+== benign_03: 177 alert
+     29   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== benign_04: 147 alert
+     24   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== benign_05: 512 alert
+     16   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== benign_06: 20 alert
+== benign_07: 24 alert
+== benign_08: 554 alert
+== benign_09: 72 alert
+     11   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== benign_10: 95 alert
+     12   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== benign_11: 457 alert
+     11   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== benign_12: 721 alert
+    120   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+== kb01_run1: 2 alert
+      1   SID 9000101 | KB01 Nmap SYN scan (window 1024) - nguon bat ky | 192.168.100.10 -> 192.168.100.20
+== kb01_run2: 2 alert
+      1   SID 9000101 | KB01 Nmap SYN scan (window 1024) - nguon bat ky | 192.168.100.10 -> 192.168.100.20
+== kb01_run3: 2 alert
+      1   SID 9000101 | KB01 Nmap SYN scan (window 1024) - nguon bat ky | 192.168.100.10 -> 192.168.100.20
+== kb01_run4: 3 alert
+      1   SID 9000101 | KB01 Nmap SYN scan (window 1024) - nguon bat ky | 192.168.100.10 -> 192.168.100.20
+== kb01_run5: 2 alert
+      1   SID 9000101 | KB01 Nmap SYN scan (window 1024) - nguon bat ky | 192.168.100.10 -> 192.168.100.20
