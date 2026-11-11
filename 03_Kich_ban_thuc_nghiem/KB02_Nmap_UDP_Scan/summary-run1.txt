@@ -1,0 +1,13 @@
+== kb02_run1: 3 alert
+      3   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb02_run2: 4 alert
+      1   SID 2019102 | ET DOS Possible SSDP Amplification Scan in Progress | 192.168.100.10 -> 192.168.100.20
+      3   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb02_run3: 4 alert
+      1   SID 2019102 | ET DOS Possible SSDP Amplification Scan in Progress | 192.168.100.10 -> 192.168.100.20
+      3   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb02_run4: 3 alert
+      3   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb02_run5: 4 alert
+      1   SID 2019102 | ET DOS Possible SSDP Amplification Scan in Progress | 192.168.100.10 -> 192.168.100.20
+      3   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
