@@ -1,0 +1,340 @@
+{
+  "timestamp": "2026-10-17T02:39:43.812655+0700",
+  "flow_id": 2082955215280001,
+  "pcap_cnt": 169,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 55166,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.812655+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 55166,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.865502+0700",
+  "flow_id": 2028454486976977,
+  "pcap_cnt": 341,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 55956,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.865502+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 55956,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.928702+0700",
+  "flow_id": 2018423405332665,
+  "pcap_cnt": 557,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 56968,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.928702+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 56968,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.994759+0700",
+  "flow_id": 2020659374495485,
+  "pcap_cnt": 767,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 57868,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.994759+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 57868,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:44.048091+0700",
+  "flow_id": 206551060747691,
+  "pcap_cnt": 949,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 58712,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:44.048091+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 58712,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.813143+0700",
+  "flow_id": 2085049914116036,
+  "pcap_cnt": 171,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 55182,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.813143+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 55182,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.876945+0700",
+  "flow_id": 2077601156419844,
+  "pcap_cnt": 395,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 56236,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.876945+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 56236,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.933090+0700",
+  "flow_id": 2037267267777808,
+  "pcap_cnt": 585,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 57102,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.933090+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 57102,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:43.995633+0700",
+  "flow_id": 2024411454721320,
+  "pcap_cnt": 771,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 57880,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:43.995633+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 57880,
+    "dest_port": 80
+  }
+}
+{
+  "timestamp": "2026-10-17T02:39:44.057542+0700",
+  "flow_id": 247144981448732,
+  "pcap_cnt": 995,
+  "event_type": "alert",
+  "src_ip": "192.168.100.10",
+  "src_port": 58918,
+  "dest_ip": "192.168.100.20",
+  "dest_port": 80,
+  "proto": "TCP",
+  "ip_v": 4,
+  "pkt_src": "wire/pcap",
+  "alert": {
+    "action": "allowed",
+    "gid": 1,
+    "signature_id": 1000010,
+    "rev": 1,
+    "signature": "NHOM_CANH_BAO: Phat hien tan cong TCP SYN Flood!",
+    "category": "Detection of a Denial of Service Attack",
+    "severity": 2
+  },
+  "direction": "to_server",
+  "flow": {
+    "pkts_toserver": 1,
+    "pkts_toclient": 0,
+    "bytes_toserver": 74,
+    "bytes_toclient": 0,
+    "start": "2026-10-17T02:39:44.057542+0700",
+    "src_ip": "192.168.100.10",
+    "dest_ip": "192.168.100.20",
+    "src_port": 58918,
+    "dest_port": 80
+  }
+}
