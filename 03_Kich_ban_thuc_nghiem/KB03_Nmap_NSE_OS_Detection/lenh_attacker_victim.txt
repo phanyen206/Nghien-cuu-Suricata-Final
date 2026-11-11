@@ -1,0 +1,80 @@
+KB05 - NMAP NSE / OS DETECTION / SERVICE VERSION (nguoi thuc hien: Thu)
+Ngay thuc hien: 04/11/2026 (bat PCAP, Run 1, Run 2)
+Attacker: Ubuntu-Attacker 192.168.100.10 | Victim: Ubuntu-Victim 192.168.100.20 | Card mang: ens33
+Moi thoi diem trong bao cao lay theo dong ho Victim (PCAP va Suricata).
+
+==================================================================
+A. KIEM TRA TRUOC (Victim)
+==================================================================
+RULES=/var/lib/suricata/rules/suricata.rules
+grep -E 'sid:(2018489|2009358|2009359|2024364);' $RULES
+  2018489 ET SCAN NMAP OS Detection Probe        : bat, udp $EXTERNAL_NET 10000: -> $HOME_NET 10000:, dsize:300, content "CCCC..."
+  2009359 ET SCAN Nmap Scripting Engine UA (NSE) : bat, http $EXTERNAL_NET -> $HOME_NET
+  2009358 ET SCAN Nmap Scripting Engine UA       : bat, http $EXTERNAL_NET -> $HOME_NET
+  2024364 ET SCAN Possible Nmap User-Agent       : bat, http $HOME_NET any -> any any  (nguon noi bo VAN khop)
+
+==================================================================
+B. TAO LUU LUONG VA BAT PCAP - 5 LAN QUET
+==================================================================
+Victim (bat truoc, dung bang Ctrl+C sau khi nmap xong ~5 giay):
+  sudo tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb05_runN.pcap host 192.168.100.10
+Kiem tra (SYN / UDP tu Attacker / so lan "Nmap Scripting Engine" / UDP 300 byte / so lan "Nmap"):
+  f=kb05_runN.pcap; tcpdump -nn -r $f 'tcp[13] = 2 and src host 192.168.100.10' | wc -l; tcpdump -nn -r $f udp and src host 192.168.100.10 | wc -l; tcpdump -nn -A -r $f | grep -c 'Nmap Scripting Engine'; tcpdump -nn -r $f 'udp and src host 192.168.100.10 and udp[4:2] = 308' | wc -l; tcpdump -nn -A -r $f | grep -c 'Nmap'
+
+run1 (dung lenh attack.sh):
+  sudo nmap -O -sV --script http-title 192.168.100.20 -oN kb05_run1.txt
+  -> 21.54 s | 22 OpenSSH 10.2p1 Ubuntu, 53 dnsmasq 2.92, 8000 SimpleHTTPServer 0.6 (Python 3.14.4), OS: Linux (khong khop chinh xac)
+  -> PCAP 2343 goi: 1047 SYN, 5 UDP, 5 x "Nmap Scripting Engine", 5 x UDP 300 byte
+
+run2:
+  sudo nmap -O 192.168.100.20 -oN kb05_run2.txt
+  -> 12.06 s | 22, 53, 8000 open | PCAP 2222 goi: 1035 SYN, 5 UDP, 0 NSE, 5 x UDP 300 byte
+
+run3:
+  sudo nmap -sV -p 22,53,8000 192.168.100.20 -oN kb05_run3.txt
+  -> 7.83 s | PCAP 119 goi: 14 SYN, 0 UDP, 4 x NSE, 0 x UDP 300 byte, 4 x "Nmap"
+
+run4:
+  sudo nmap -A -T4 192.168.100.20 -oN kb05_run4.txt
+  -> 27.21 s | them dns-nsid, http-server-header, traceroute | PCAP 2785 goi: 1084 SYN, 6 UDP, 29 x NSE, 5 x UDP 300 byte, 45 x "Nmap"
+
+run5:
+  sudo nmap -p 8000 --script http-title 192.168.100.20 -oN kb05_run5.txt
+  -> 0.72 s | PCAP 19 goi: 2 SYN, 0 UDP, 1 x NSE, 0 x UDP 300 byte, 1 x "Nmap"
+
+==================================================================
+C. LUU LUONG BINH THUONG
+==================================================================
+Dung chung bo benign_01.pcap ... benign_12.pcap (xem lenh_benign.txt trong KB01).
+
+==================================================================
+D. CHAY SURICATA OFFLINE (Victim, Suricata 8.0.3)
+==================================================================
+Run 1 - chi ET Open:
+  for f in kb05_run*.pcap; do mkdir -p out_kb05/run1/${f%.pcap}; done
+  for f in kb05_run*.pcap; do n=${f%.pcap}; sudo suricata -c /etc/suricata/suricata.yaml -k none -S $RULES -r $f -l out_kb05/run1/$n > out_kb05/run1/$n/run.log 2>&1; done
+  (lan dau quen buoc mkdir -> "No such file or directory", da chay lai)
+  Ket qua: 2024364 o run1 (5), run3 (4), run4 (29), run5 (1); run2 khong co canh bao quet -> 4/5
+           2200025 ICMPv4 unknown code o run1, run2, run4 (canh bao giai ma goi, khong tinh la phat hien)
+  Benign Run 1: dung lai ket qua KB01 (cung ET Open, cung suricata.yaml, cung 12 PCAP)
+
+Dem dau hieu tren 17 PCAP (UDP 300 byte / "Nmap Scripting Engine" / "Nmap"):
+  for f in kb05_run*.pcap benign_*.pcap; do echo $f $(tcpdump -nn -r $f 'udp and udp[4:2] = 308' | wc -l) $(tcpdump -nn -A -r $f | grep -c 'Nmap Scripting Engine') $(tcpdump -nn -A -r $f | grep -c 'Nmap'); done
+  -> run1 5/5/5, run2 5/0/0, run3 0/4/4, run4 5/29/45, run5 0/1/1, 12 benign: 0/0/0
+
+Run 2 - ET Open + custom-rule.rules (SID 9000501):
+  cat $RULES custom-rule-kb05.rules > /tmp/run2_kb05.rules
+  sudo suricata -T -c /etc/suricata/suricata.yaml -S /tmp/run2_kb05.rules   -> successfully loaded
+  for f in kb05_run*.pcap benign_*.pcap; do mkdir -p out_kb05/run2/${f%.pcap}; done
+  for f in kb05_run*.pcap benign_*.pcap; do n=${f%.pcap}; sudo suricata -c /etc/suricata/suricata.yaml -k none -S /tmp/run2_kb05.rules -r $f -l out_kb05/run2/$n > out_kb05/run2/$n/run.log 2>&1; done
+  Ket qua: run1 2024364+9000501, run2 9000501, run3 2024364, run4 2024364+9000501, run5 2024364 -> 5/5
+           12 file benign: 0 canh bao 2024364 / 9000501
+
+Trich bang chung (thu muc nop_kb05), loai bo checksum 2200074/2200075 va banner 2034636:
+  jq -c 'select(.event_type=="alert" and .alert.signature_id!=2200074 and .alert.signature_id!=2200075 and .alert.signature_id!=2034636)' out_kb05/run1/kb05_run*/eve.json > nop_kb05/eve-excerpt-run1.json   (70 dong)
+  jq -c '...cung bo loc...' out_kb05/run2/kb05_run*/eve.json > nop_kb05/eve-excerpt-run2.json   (73 dong)
+  jq -c 'select(.event_type=="alert" and .alert.signature_id!=2200074 and .alert.signature_id!=2200075)' out_kb05/run2/benign_*/eve.json > nop_kb05/benign-eve-excerpt-run2.json   (223 dong)
+  benign-eve-excerpt-run1.json: chep tu KB01
+
+Do do tre (goi IP dau tien tu Attacker -> canh bao som nhat cua 2024364 / 9000501):
+  for i in 1 2 3 4 5; do f=kb05_run$i; tcpdump -tttt -nn -r $f.pcap -c 1 ip and src host 192.168.100.10; jq -r -s '[.[]|select(.event_type=="alert" and (.alert.signature_id==2024364 or .alert.signature_id==9000501))]|group_by(.alert.signature_id)|.[]|min_by(.timestamp)|[.timestamp,.alert.signature_id]|@tsv' out_kb05/run2/$f/eve.json; done
