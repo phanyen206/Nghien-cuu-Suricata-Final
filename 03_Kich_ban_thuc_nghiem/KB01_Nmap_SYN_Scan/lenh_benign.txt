@@ -1,0 +1,59 @@
+LUU LUONG BINH THUONG - DUNG CHUNG CHO KB01-05 (nguoi thuc hien: Thu)
+Ngay thu: 01/11/2026
+Attacker: 192.168.100.10 | Victim: 192.168.100.20 | Card mang Victim: ens33
+Tat ca pcap duoc bat tren Victim bang tcpdump (tu dung sau "timeout" giay). KHONG chay nmap.
+
+==================================================================
+B. LUU LUONG BINH THUONG (dung chung cho KB01-05, KHONG chay nmap)
+==================================================================
+Chuan bi tren Victim (chay suot qua trinh):
+  Tab web : mkdir -p ~/www && cd ~/www
+            echo "<h1>Lab web</h1>" > index.html
+            head -c 20M /dev/urandom > file20MB.bin
+            python3 -m http.server 8000
+  Tab DNS : sudo dnsmasq -d --bind-interfaces --listen-address=192.168.100.20 --no-resolv --server=8.8.8.8
+  SSH     : sudo apt install -y openssh-server && sudo systemctl enable --now ssh
+
+Lenh Victim cho moi file (doi so giay va ten file):
+  sudo timeout <giay> tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/benign_XX.pcap host 192.168.100.10
+
+benign_01 (timeout 100) - ping 1 goi/giay x 90 - 178 goi
+  Attacker: ping -c 90 192.168.100.20
+
+benign_02 (timeout 100) - ping goi 1000 byte, 2 giay/lan x 45 - 100 goi
+  Attacker: ping -c 45 -i 2 -s 1000 192.168.100.20
+
+benign_03 (timeout 100) - truy cap web 30 lan, cach 3 giay - 296 goi
+  Attacker: for i in $(seq 30); do curl -s -o /dev/null -w "%{http_code} " http://192.168.100.20:8000/; sleep 3; done; echo
+
+benign_04 (timeout 100) - duyet web ngau nhien, co trang 404 - 246 goi
+  Attacker: for i in $(seq 25); do p=$(shuf -n1 -e / /index.html /about.html /khongtontai); curl -s -o /dev/null -w "%{http_code} " http://192.168.100.20:8000$p; sleep $((RANDOM%4+2)); done; echo
+
+benign_05 (timeout 100) - tai file 20 MB qua HTTP + xem web - 849 goi, 21 MB
+  Attacker: curl -s -o /dev/null http://192.168.100.20:8000/; sleep 5; curl -o /tmp/file20MB.bin http://192.168.100.20:8000/file20MB.bin; for i in $(seq 15); do sleep 5; curl -s -o /dev/null -w "%{http_code} " http://192.168.100.20:8000/; done; echo
+
+benign_06 (timeout 100) - 20 truy van DNS, cach 4 giay - 48 goi
+  Attacker: for i in 1 2 3 4; do for d in google.com github.com ubuntu.com wikipedia.org vnexpress.net; do echo "$d -> $(dig @192.168.100.20 $d +short | head -1)"; sleep 4; done; done
+
+benign_07 (timeout 120) - SSH dung mat khau, chay 4 lenh roi tu dong - 51 goi
+  Attacker: ssh nhung@192.168.100.20 'uptime; sleep 20; ls -la; sleep 20; df -h; sleep 20; cat /etc/os-release'
+
+benign_08 (timeout 100) - tai file qua SCP (2 luot) - 910 goi, 21 MB
+  Attacker: scp nhung@192.168.100.20:/home/nhung/www/file20MB.bin /tmp/ && sleep 30 && scp nhung@192.168.100.20:/etc/os-release /tmp/
+
+benign_09 (timeout 120) - hon hop ngau nhien ping / web / DNS - 154 goi
+  Attacker: for i in $(seq 25); do case $((RANDOM%3)) in 0) echo "ping"; ping -c 2 -q 192.168.100.20 >/dev/null;; 1) echo "web $(curl -s -o /dev/null -w '%{http_code}' http://192.168.100.20:8000/)";; 2) echo "dns $(dig @192.168.100.20 $(shuf -n1 -e google.com github.com ubuntu.com vnexpress.net) +short | head -1)";; esac; sleep $((RANDOM%3+3)); done
+
+benign_10 (timeout 120) - hon hop web + SSH - 166 goi
+  Attacker: for i in $(seq 6); do curl -s -o /dev/null -w "%{http_code} " http://192.168.100.20:8000/; sleep 4; done; echo; ssh nhung@192.168.100.20 'uptime; sleep 15; df -h /'; for i in $(seq 6); do curl -s -o /dev/null -w "%{http_code} " http://192.168.100.20:8000/; sleep 4; done; echo
+
+benign_11 (timeout 100) - hon hop DNS + tai file - 721 goi, 21 MB
+  Attacker: for d in google.com github.com ubuntu.com; do echo "dns $d -> $(dig @192.168.100.20 $d +short | head -1)"; sleep 3; done; curl -o /tmp/f.bin http://192.168.100.20:8000/file20MB.bin; for i in $(seq 10); do echo "dns $(dig @192.168.100.20 $(shuf -n1 -e wikipedia.org vnexpress.net google.com) +short | head -1) | web $(curl -s -o /dev/null -w '%{http_code}' http://192.168.100.20:8000/)"; sleep 5; done
+
+benign_12 (timeout 100) - tai lai trang lien tuc: 3 dot x 40 request - 1202 goi, 120 SYN vao cong 8000
+  Attacker: for b in 1 2 3; do echo "Dot $b:"; for i in $(seq 40); do curl -s -o /dev/null -w "%{http_code} " http://192.168.100.20:8000/; done; echo; sleep 25; done
+  (Muc dich: luu luong hop le nhung co nhieu SYN don dap -> thu canh bao sai cua luat quet cong)
+
+Ghi chu:
+- Thoi gian co luu luong thuc te: benign_08 ~40 s, benign_11 ~55 s, benign_12 ~52 s; cac file khac 64-103 s.
+- Kiem tra so SYN: tcpdump -nn -r <file> 'tcp[tcpflags] == tcp-syn' | wc -l
