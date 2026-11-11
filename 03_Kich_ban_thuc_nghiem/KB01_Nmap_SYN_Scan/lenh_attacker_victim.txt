@@ -1,0 +1,71 @@
+KB01 - TCP SYN SCAN (nguoi thuc hien: Thu)
+Ngay thu: 01/11/2026
+Attacker: 192.168.100.10 | Victim: 192.168.100.20 | Card mang Victim: ens33
+Tat ca pcap duoc bat tren Victim bang tcpdump (tu dung sau "timeout" giay).
+
+==================================================================
+A. TAO LUU LUONG VA BAT PCAP - 5 LAN QUET (attack.sh goc: nmap -sS -p 1-1000 = run2)
+==================================================================
+Moi lan: (1) Victim bat tcpdump, cho dong "listening on ens33"
+         (2) Attacker chay nmap
+         (3) tcpdump tu dung
+
+run1  - quet cham, it cong
+  Victim  : sudo timeout 90  tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb01_run1.pcap host 192.168.100.10
+  Attacker: sudo nmap -sS -T2 -p 1-100 192.168.100.20 -oN kb01_run1.txt
+  Ket qua : 209 goi, 100 SYN, quet 41 s, cong mo: 22
+
+run2  - toc do mac dinh (dung lenh attack.sh)
+  Victim  : sudo timeout 45  tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb01_run2.pcap host 192.168.100.10
+  Attacker: sudo nmap -sS -T3 -p 1-1000 192.168.100.20 -oN kb01_run2.txt
+  Ket qua : 2005 goi, 1000 SYN, quet 0,71 s, cong mo: 22
+
+run3  - quet nhanh
+  Victim  : sudo timeout 45  tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb01_run3.pcap host 192.168.100.10
+  Attacker: sudo nmap -sS -T4 -p 1-1000 192.168.100.20 -oN kb01_run3.txt
+  Ket qua : 2005 goi, 1000 SYN, quet 0,71 s, cong mo: 22
+
+run4  - quet toan bo cong
+  Victim  : sudo timeout 180 tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb01_run4.pcap host 192.168.100.10
+  Attacker: sudo nmap -sS -T4 -p 1-65535 192.168.100.20 -oN kb01_run4.txt
+  Ket qua : 131076 goi, 65535 SYN, quet 4,25 s, cong mo: 22, 8000
+            (8000 la web server phuc vu benign dang chay tren Victim)
+
+run5  - chi quet 11 cong dich vu pho bien
+  Victim  : sudo timeout 45  tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb01_run5.pcap host 192.168.100.10
+  Attacker: sudo nmap -sS -T3 -p 21,22,23,25,53,80,110,143,443,3306,8080 192.168.100.20 -oN kb01_run5.txt
+  Ket qua : 27 goi, 11 SYN, quet 0,63 s, cong mo: 22
+
+==================================================================
+B. LUU LUONG BINH THUONG
+==================================================================
+Dung chung bo benign_01.pcap ... benign_12.pcap cho KB01-05.
+Lenh tao tung file: xem lenh_benign.txt
+
+==================================================================
+C. CHAY SURICATA OFFLINE (tren Victim, Suricata 8.0.3)
+==================================================================
+Kiem tra truoc khi chay:
+  RULES=/var/lib/suricata/rules/suricata.rules   (ET Open, cap nhat 18/10)
+  grep -c '^alert' $RULES                        -> 53202 luat dang bat
+  grep 'sid:2009582;' $RULES                     -> luat "ET SCAN NMAP -sS window 1024" dang bi tat (#),
+                                                    va chi ap dung $EXTERNAL_NET -> $HOME_NET
+  HOME_NET: "[192.168.100.0/24]", EXTERNAL_NET: "!$HOME_NET"
+
+Run 1 - chi ET Open:
+  for f in kb01_run*.pcap benign_*.pcap; do n=${f%.pcap}; mkdir -p out/run1/$n; sudo suricata -c /etc/suricata/suricata.yaml -k none -S $RULES -r $f -l out/run1/$n > out/run1/$n/run.log 2>&1; done
+  Ket qua: 0/5 lan quet co canh bao quet cong (chi co SID 2200074 invalid checksum)
+
+Run 2 - ET Open + luat nhom (custom-rule.rules, SID 9000101):
+  cat $RULES custom-rule.rules > /tmp/run2.rules
+  sudo suricata -T -c /etc/suricata/suricata.yaml -S /tmp/run2.rules
+  for f in kb01_run*.pcap benign_*.pcap; do n=${f%.pcap}; mkdir -p out/run2/$n; sudo suricata -c /etc/suricata/suricata.yaml -k none -S /tmp/run2.rules -r $f -l out/run2/$n > out/run2/$n/run.log 2>&1; done
+  Ket qua: 5/5 lan quet co 1 canh bao SID 9000101 (192.168.100.10 -> 192.168.100.20),
+           12 file benign: 0 canh bao SID 9000101
+
+Trich bang chung:
+  jq -c 'select(.event_type=="alert")' out/run1/kb01_run*/eve.json > eve-excerpt-run1.json
+  jq -c 'select(.event_type=="alert" and .alert.signature_id==9000101)' out/run2/kb01_run*/eve.json > eve-excerpt-run2.json
+  jq -c 'select(.event_type=="alert" and .alert.signature_id!=2200074 and .alert.signature_id!=2200075)' out/run1/benign_*/eve.json > benign-eve-excerpt-run1.json
+  jq -c 'select(.event_type=="alert" and .alert.signature_id!=2200074 and .alert.signature_id!=2200075)' out/run2/benign_*/eve.json > benign-eve-excerpt-run2.json
+  (bo canh bao checksum 2200074/2200075 vi do checksum offload khi bat goi tren Victim, khong lien quan hanh vi quet)
