@@ -1,0 +1,5 @@
+# Trích luật từ README nguồn; cần đối chiếu với file/lần chạy thực tế trước khi dùng lại.
+
+alert http any any -> any any (msg:"KB14 Reflected XSS Attack Detected"; content:"q="; content:"<script>"; sid:1000016; rev:1;)
+
+alert http any any -> any any (msg:"CANH BAO: Phat hien XSS Test"; flow:established,to_server; http.uri.raw; content:"%3Cscript%3E"; nocase; sid:1000016; rev:1;)
