@@ -1,0 +1,4 @@
+# Trích luật từ README nguồn; cần đối chiếu với file/lần chạy thực tế trước khi dùng lại.
+
+alert http 192.168.100.10 any -> 192.168.100.20 80 (msg:"LOCAL SQLi Boolean OR Detection"; flow:established,to_server; http.uri.raw; content:"%27+OR+"; nocase; sid:1000008; rev:1;)
+alert http 192.168.100.10 any -> 192.168.100.20 80 (msg:"LOCAL SQLi UNION SELECT Detection"; flow:established,to_server; http.uri.raw; content:"+UNION+SELECT+"; nocase; sid:1000018; rev:1;)
