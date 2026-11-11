@@ -1,0 +1,1 @@
+alert udp 192.168.100.10 any -> 192.168.100.20 9999 (msg:"LAB UDP Flood - High Rate"; detection_filter:track by_src, count 20, seconds 1; classtype:attempted-dos; sid:1000015; rev:2;)
