@@ -1,0 +1,25 @@
+== kb05_run1: 119 alert
+      5   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+      9   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.20 -> 192.168.100.10
+     95   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb05_run2: 48 alert
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.20 -> 192.168.100.10
+     38   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb05_run3: 63 alert
+      4   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+      8   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+     51   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb05_run4: 338 alert
+     29   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+     36   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.20 -> 192.168.100.10
+    262   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+      1   SID 2260002 | SURICATA Applayer Detect protocol only one direction | 192.168.100.10 -> 192.168.100.20
+== kb05_run5: 9 alert
+      1   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+      1   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+      7   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
