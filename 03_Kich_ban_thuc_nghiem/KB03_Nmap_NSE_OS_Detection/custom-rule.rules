@@ -1,0 +1,1 @@
+alert udp any any -> $HOME_NET any (msg:"KB05 Nmap OS detection - goi UDP 300 byte chu C"; dsize:300; content:"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"; fast_pattern; threshold: type limit, track by_src, count 1, seconds 60; classtype:attempted-recon; sid:9000501; rev:1;)
