@@ -1,0 +1,79 @@
+KB02 - NMAP UDP SCAN (nguoi thuc hien: Thu)
+Ngay bat PCAP: 03/11/2026 | Ngay chay Suricata Run 1: 03/11/2026, Run 2: 04/11/2026
+Attacker: Ubuntu-Attacker 192.168.100.10 | Victim: Ubuntu-Victim 192.168.100.20 | Card mang: ens33
+Ghi chu: dong ho Attacker cham hon Victim khoang 2 phut (dat gio bang tay sau khi resume may ao).
+Moi thoi diem trong bao cao lay theo dong ho Victim (PCAP va Suricata).
+
+==================================================================
+A. KIEM TRA TRUOC (Victim)
+==================================================================
+RULES=/var/lib/suricata/rules/suricata.rules
+grep '^alert' $RULES | grep 'ET SCAN' | grep -iE 'udp|-sU' ...     -> khong co luat chung cho nmap -sU
+grep -E '^# ?alert' $RULES | grep 'ET SCAN' | grep -iE 'udp|-sU' ...  -> chi NBTStat, crawler
+sudo ss -ulnp   -> Victim mo UDP 53 (dnsmasq), 5353 (avahi), 3702 (python3 WS-Discovery)
+
+==================================================================
+B. TAO LUU LUONG VA BAT PCAP - 5 LAN QUET
+==================================================================
+Victim (bat truoc, dung bang Ctrl+C sau khi nmap xong ~5 giay):
+  sudo tcpdump -i ens33 -nn -s 0 -Z $USER -w ~/kb_pcaps/kb02_runN.pcap host 192.168.100.10
+Kiem tra:
+  tcpdump -nn -r kb02_runN.pcap udp and src 192.168.100.10 | wc -l   (goi UDP Attacker gui)
+  tcpdump -nn -r kb02_runN.pcap icmp | wc -l                         (goi ICMP Victim tra ve)
+
+run1 (dung lenh attack.sh):
+  sudo nmap -sU --top-ports 100 192.168.100.20 -oN kb02_run1.txt
+  -> 108.34 s | 53 open, 5353 open|filtered, 98 closed | PCAP 404 goi: 276 UDP, 111 ICMP
+  (lan go dau bi loi dan lenh "Failed to resolve", 0 host, khong gui goi nao -> bo, bat lai PCAP)
+
+run2:
+  sudo nmap -sU -T2 --top-ports 20 192.168.100.20 -oN kb02_run2.txt
+  -> 19.90 s | 53 open, 19 closed | PCAP 89 goi: 55 UDP, 27 ICMP
+
+run3:
+  sudo nmap -sU -T4 --top-ports 100 192.168.100.20 -oN kb02_run3.txt
+  -> 52.28 s | 53 open, 55 closed, 44 open|filtered | PCAP 719 goi: 646 UDP, 60 ICMP
+
+run4:
+  sudo nmap -sU -T4 --top-ports 200 192.168.100.20 -oN kb02_run4.txt
+  -> 180.74 s | 53 open, 170 closed, 29 open|filtered | PCAP 826 goi: 613 UDP, 188 ICMP
+  nmap canh bao: "giving up on port because retransmission cap hit (6)"
+
+run5:
+  sudo nmap -sU -p 53,67,69,123,137,161,500,514,1900,5353 192.168.100.20 -oN kb02_run5.txt
+  -> 5.73 s | 53 open, 1900 + 5353 open|filtered, 7 closed | PCAP 76 goi: 56 UDP, 13 ICMP
+
+==================================================================
+C. LUU LUONG BINH THUONG
+==================================================================
+Dung chung bo benign_01.pcap ... benign_12.pcap (xem lenh_benign.txt trong KB01).
+
+==================================================================
+D. CHAY SURICATA OFFLINE (Victim, Suricata 8.0.3)
+==================================================================
+Run 1 - chi ET Open:
+  for f in kb02_run*.pcap; do n=${f%.pcap}; mkdir -p out_kb02/run1/$n; sudo suricata -c /etc/suricata/suricata.yaml -k none -S $RULES -r $f -l out_kb02/run1/$n > out_kb02/run1/$n/run.log 2>&1; done
+  Ket qua: SID 2019102 (ET DOS Possible SSDP Amplification Scan) o run2, run3, run5 -> 3/5
+  Benign Run 1: dung lai ket qua KB01 (cung ET Open, cung suricata.yaml, cung 12 PCAP)
+
+Phan tich Run 1:
+  grep 'sid:2019102;' $RULES     -> can >= 2 goi SSDP M-SEARCH toi cong 1900 trong 60 s
+  for f in kb02_run*.pcap; do echo $f; tcpdump -nn -r $f udp and dst port 1900 | wc -l; done
+    -> run1: 1, run2: 2, run3: 6, run4: 1, run5: 5
+  for f in kb02_run*.pcap benign_*.pcap; do echo $f $(tcpdump -nn -r $f 'udp and src 192.168.100.10 and udp[4:2] = 8' | wc -l) $(tcpdump -nn -r $f 'icmp[0] = 3 and icmp[1] = 3' | wc -l); done
+    -> UDP rong / ICMP port unreachable: run1 75/111, run2 17/27, run3 186/60, run4 212/188, run5 1/13, benign 0/0
+
+Run 2 - ET Open + custom-rule.rules (SID 9000201, 9000202):
+  cat $RULES custom-rule-kb02.rules > /tmp/run2_kb02.rules
+  sudo suricata -T -c /etc/suricata/suricata.yaml -S /tmp/run2_kb02.rules   -> successfully loaded
+  for f in kb02_run*.pcap benign_*.pcap; do n=${f%.pcap}; mkdir -p out_kb02/run2/$n; sudo suricata -c /etc/suricata/suricata.yaml -k none -S /tmp/run2_kb02.rules -r $f -l out_kb02/run2/$n > out_kb02/run2/$n/run.log 2>&1; done
+  Ket qua: 5/5 lan quet co canh bao 9000201 hoac 9000202; 12 file benign: 0 canh bao 9000201/9000202
+
+Trich bang chung (thu muc nop_kb02):
+  jq -c 'select(.event_type=="alert")' out_kb02/run1/kb02_run*/eve.json > nop_kb02/eve-excerpt-run1.json
+  jq -c 'select(.event_type=="alert" and (.alert.signature_id==9000201 or .alert.signature_id==9000202 or .alert.signature_id==2019102))' out_kb02/run2/kb02_run*/eve.json > nop_kb02/eve-excerpt-run2.json
+  jq -c 'select(.event_type=="alert" and .alert.signature_id!=2200074 and .alert.signature_id!=2200075)' out_kb02/run2/benign_*/eve.json > nop_kb02/benign-eve-excerpt-run2.json
+  benign-eve-excerpt-run1.json: chep tu KB01
+
+Do do tre:
+  for i in 1 2 3 4 5; do f=kb02_run$i; tcpdump -tttt -nn -r $f.pcap -c 1 udp and src 192.168.100.10; jq -r 'select(.event_type=="alert" and (.alert.signature_id==9000201 or .alert.signature_id==9000202))|[.timestamp,.alert.signature_id]|@tsv' out_kb02/run2/$f/eve.json; done
