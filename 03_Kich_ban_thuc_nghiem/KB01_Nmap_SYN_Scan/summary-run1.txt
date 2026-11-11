@@ -1,0 +1,44 @@
+== benign_01: 0 alert
+== benign_02: 0 alert
+== benign_03: 177 alert
+     29   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+    148   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_04: 147 alert
+     24   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+    123   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_05: 512 alert
+     16   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+    496   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_06: 20 alert
+     20   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_07: 24 alert
+      1   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.10 -> 192.168.100.20
+     23   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_08: 554 alert
+      2   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.10 -> 192.168.100.20
+    552   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_09: 72 alert
+     11   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+     55   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+      6   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_10: 95 alert
+     12   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+      1   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.10 -> 192.168.100.20
+     82   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_11: 457 alert
+     11   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+    433   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+     13   SID 2200075 | SURICATA UDPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== benign_12: 721 alert
+    120   SID 2034636 | ET INFO Python SimpleHTTP ServerBanner | 192.168.100.20 -> 192.168.100.10
+    601   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb01_run1: 1 alert
+      1   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb01_run2: 1 alert
+      1   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb01_run3: 1 alert
+      1   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb01_run4: 2 alert
+      2   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
+== kb01_run5: 1 alert
+      1   SID 2200074 | SURICATA TCPv4 invalid checksum | 192.168.100.20 -> 192.168.100.10
