@@ -1,0 +1,1 @@
+alert tcp any any -> $HOME_NET any (msg:"KB01 Nmap SYN scan (window 1024) - nguon bat ky"; flags:S,12; ack:0; window:1024; dsize:0; threshold: type both, track by_src, count 5, seconds 60; classtype:attempted-recon; sid:9000101; rev:1;)
