@@ -1,0 +1,31 @@
+== benign_01: 0 alert
+== benign_02: 0 alert
+== benign_03: 177 alert
+== benign_04: 147 alert
+== benign_05: 512 alert
+== benign_06: 20 alert
+== benign_07: 24 alert
+== benign_08: 554 alert
+== benign_09: 72 alert
+== benign_10: 95 alert
+== benign_11: 457 alert
+== benign_12: 721 alert
+== kb05_run1: 120 alert
+      5   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.20 -> 192.168.100.10
+      1   SID 9000501 | KB05 Nmap OS detection - goi UDP 300 byte chu C | 192.168.100.10 -> 192.168.100.20
+== kb05_run2: 49 alert
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.20 -> 192.168.100.10
+      1   SID 9000501 | KB05 Nmap OS detection - goi UDP 300 byte chu C | 192.168.100.10 -> 192.168.100.20
+== kb05_run3: 63 alert
+      4   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+== kb05_run4: 339 alert
+     29   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.10 -> 192.168.100.20
+      5   SID 2200025 | SURICATA ICMPv4 unknown code | 192.168.100.20 -> 192.168.100.10
+      1   SID 2260002 | SURICATA Applayer Detect protocol only one direction | 192.168.100.10 -> 192.168.100.20
+      1   SID 9000501 | KB05 Nmap OS detection - goi UDP 300 byte chu C | 192.168.100.10 -> 192.168.100.20
+== kb05_run5: 9 alert
+      1   SID 2024364 | ET SCAN Possible Nmap User-Agent Observed | 192.168.100.10 -> 192.168.100.20
