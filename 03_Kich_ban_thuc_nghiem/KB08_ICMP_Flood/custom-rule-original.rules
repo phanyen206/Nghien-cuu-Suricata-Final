@@ -1,0 +1,1 @@
+alert icmp any any -> any any (msg:"LAB DOS ICMP flood"; itype:8; classtype:attempted-dos; sid:1000006; rev:1;)
