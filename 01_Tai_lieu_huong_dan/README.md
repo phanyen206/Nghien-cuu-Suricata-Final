@@ -3,6 +3,7 @@
 Thư mục này mô tả hạ tầng dùng để tái lập các kịch bản. Đọc tài liệu ở đây trước khi chạy bất kỳ script nào trong mục 03.
 
 ## Thành phần
+- `Cai-dat-moi-truong-va-Suricata.md`: hướng dẫn dựng máy ảo Ubuntu, cấu hình mạng, cài đặt và kiểm tra Suricata.
 - `So-do-mo-hinh-mang.md`: sơ đồ kết nối, vai trò Attacker/Victim và interface giám sát.
 - Thông tin máy ảo, hệ điều hành và phiên bản phần mềm được ghi trong README của từng kịch bản nếu có khác biệt.
 
