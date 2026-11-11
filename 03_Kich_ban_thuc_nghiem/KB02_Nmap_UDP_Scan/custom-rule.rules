@@ -1,0 +1,2 @@
+alert udp any any -> $HOME_NET any (msg:"KB02 UDP scan - nhieu goi UDP rong"; dsize:0; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:9000201; rev:1;)
+alert icmp $HOME_NET any -> any any (msg:"KB02 UDP scan - nhieu ICMP port unreachable"; itype:3; icode:3; threshold: type both, track by_dst, count 10, seconds 60; classtype:attempted-recon; sid:9000202; rev:1;)
