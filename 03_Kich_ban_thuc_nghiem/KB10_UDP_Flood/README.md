@@ -79,13 +79,13 @@ Số lượng cảnh báo **không** được dùng làm tiêu chí so sánh, v�
 
 Máy Attacker có IP 192.168.100.10 trên `ens33` và ping thành công đến Victim (4/4 gói, mất 0%).
 
-![Hình 1. Attacker: kiểm tra IP và ping tới Victim](screenshots/01-attacker-ip-ping.png)
+![Hình 1. Attacker: kiểm tra IP và ping tới Victim](imgs/01-attacker-ip-ping.png)
 *Hình 1. Attacker: `ip -br addr` và `ping` tới Victim. Ảnh chụp ngày 31/10, trong buổi chuẩn bị môi trường.*
 
-![Hình 2. Attacker: bảng định tuyến](screenshots/03-attacker-ip-route.png)
+![Hình 2. Attacker: bảng định tuyến](imgs/03-attacker-ip-route.png)
 *Hình 2. Attacker: `ip route`. Mạng lab 192.168.100.0/24 đi qua `ens33`.*
 
-![Hình 3. Victim: IP, định tuyến, trạng thái dịch vụ và kiểm tra cấu hình Suricata](screenshots/02-victim-ip-suricata-check.png)
+![Hình 3. Victim: IP, định tuyến, trạng thái dịch vụ và kiểm tra cấu hình Suricata](imgs/02-victim-ip-suricata-check.png)
 *Hình 3. Victim: `ip -br addr`, `ip route`, `systemctl is-active suricata`, và `suricata -T` cho bộ luật Run 1 và Run 2.*
 
 ### 3. Kiểm tra Suricata và bộ luật
@@ -97,7 +97,7 @@ Kết quả `suricata -T` cho thấy cả hai cấu hình đều nạp thành c�
 
 **Lưu ý:** dịch vụ `suricata` chạy nền (systemd) trên Victim đang ở trạng thái `failed`. Toàn bộ kiểm thử trong kịch bản này dùng chế độ đọc PCAP ngoại tuyến (`suricata -r`), gọi trực tiếp chương trình Suricata và **không phụ thuộc** vào dịch vụ này. Lỗi dịch vụ đã được báo cho thành viên phụ trách cài đặt Suricata.
 
-![Hình 4. Kiểm tra phiên bản Suricata và bộ luật ET Open](screenshots/04-suricata-ruleset-check.png)
+![Hình 4. Kiểm tra phiên bản Suricata và bộ luật ET Open](imgs/04-suricata-ruleset-check.png)
 *Hình 4. Phiên bản Suricata, file luật ET Open, số luật đang bật (53 202), số luật ET SCAN đang bật (274) và bị tắt (46).*
 
 ---
@@ -142,35 +142,35 @@ Ghi chú:
 
 **run1:** `-T2`, 100 cổng
 
-![run1 – Attacker](screenshots/kb01-run1-attacker.png)
-![run1 – Victim](screenshots/kb01-run1-victim.png)
+![run1 – Attacker](imgs/kb01-run1-attacker.png)
+![run1 – Victim](imgs/kb01-run1-victim.png)
 *Hình 5. run1: nmap trên Attacker; tcpdump bắt được 209 gói, trong đó 100 SYN.*
 
 **run2:** `-T3`, 1–1000 (lệnh `attack.sh` gốc)
 
-![run2 – Attacker](screenshots/kb01-run2-attacker.png)
-![run2 – Victim](screenshots/kb01-run2-victim.png)
+![run2 – Attacker](imgs/kb01-run2-attacker.png)
+![run2 – Victim](imgs/kb01-run2-victim.png)
 *Hình 6. run2: nmap quét 1000 cổng trong 0,71 s; tcpdump bắt được 2005 gói, trong đó 1000 SYN.*
 
 **run3:** `-T4`, 1–1000
 
-![run3 – Attacker](screenshots/kb01-run3-attacker.png)
-![run3 – Victim](screenshots/kb01-run3-victim.png)
+![run3 – Attacker](imgs/kb01-run3-attacker.png)
+![run3 – Victim](imgs/kb01-run3-victim.png)
 *Hình 7. run3: nmap `-T4`; tcpdump bắt được 2005 gói, trong đó 1000 SYN.*
 
 **run4:** `-T4`, toàn bộ 65 535 cổng
 
-![run4 – Attacker](screenshots/kb01-run4-attacker.png)
-![run4 – Victim](screenshots/kb01-run4-victim.png)
+![run4 – Attacker](imgs/kb01-run4-attacker.png)
+![run4 – Victim](imgs/kb01-run4-victim.png)
 *Hình 8. run4: quét 65 535 cổng trong 4,25 s, phát hiện cổng 22 và 8000 mở; tcpdump bắt được 131 076 gói, trong đó 65 535 SYN.*
 
 **run5:** `-T3`, 11 cổng dịch vụ phổ biến
 
-![run5 – Attacker](screenshots/kb01-run5-attacker.png)
-![run5 – Victim](screenshots/kb01-run5-victim.png)
+![run5 – Attacker](imgs/kb01-run5-attacker.png)
+![run5 – Victim](imgs/kb01-run5-victim.png)
 *Hình 9. run5: quét 11 cổng; tcpdump bắt được 27 gói, trong đó 11 SYN.*
 
-![Danh sách PCAP](screenshots/08-pcap-list.png)
+![Danh sách PCAP](imgs/08-pcap-list.png)
 *Hình 10. Danh sách 17 PCAP đã thu: 5 PCAP tấn công và 12 PCAP lưu lượng bình thường.*
 
 ### 4. Lưu lượng bình thường
@@ -192,10 +192,10 @@ Trước khi chạy, các luật ET Open liên quan đến Nmap được kiểm 
 - Các luật **đang bật** chỉ nhắm vào hoạt động khác của Nmap như NSE, User-Agent, quét SIP, OS detection, SQL spider. **Không có luật nào cho `-sS` thuần.**
 - Các luật dành cho SYN scan **đang bị tắt** (dòng bắt đầu bằng `#`): `ET SCAN NMAP -sS window 1024` (SID 2009582), `window 2048` (2000537), `window 3072` (2009583), `window 4096` (2009584).
 
-![Luật ET SCAN Nmap đang bật](screenshots/05-et-scan-nmap-enabled.png)
+![Luật ET SCAN Nmap đang bật](imgs/05-et-scan-nmap-enabled.png)
 *Hình 11. HOME_NET và danh sách luật ET SCAN liên quan đến Nmap đang bật.*
 
-![Luật ET SCAN Nmap bị tắt](screenshots/06-et-scan-nmap-disabled.png)
+![Luật ET SCAN Nmap bị tắt](imgs/06-et-scan-nmap-disabled.png)
 *Hình 12. Danh sách luật ET SCAN liên quan đến Nmap đang bị tắt, gồm các luật `-sS window ...`.*
 
 Nội dung luật SID 2009582:
@@ -204,7 +204,7 @@ Nội dung luật SID 2009582:
 # alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"ET SCAN NMAP -sS window 1024"; fragbits:!D; dsize:0; flags:S,12; ack:0; window:1024; threshold: type both, track by_dst, count 1, seconds 60; classtype:attempted-recon; sid:2009582; rev:3; ...)
 ```
 
-![EXTERNAL_NET và luật 2009582](screenshots/07-external-net-sid2009582.png)
+![EXTERNAL_NET và luật 2009582](imgs/07-external-net-sid2009582.png)
 *Hình 13. `EXTERNAL_NET: "!$HOME_NET"` và luật SID 2009582 đang bị tắt.*
 
 ### 2. Lệnh chạy
@@ -229,7 +229,7 @@ Tùy chọn `-S` chỉ nạp đúng file luật được chỉ định, nên Run
 | kb01_run4 | 2 | **0** | SID 2200074 |
 | kb01_run5 | 1 | **0** | SID 2200074 |
 
-![Run 1 – kết quả trên PCAP tấn công](screenshots/10-run1-summary-kb01.png)
+![Run 1 – kết quả trên PCAP tấn công](imgs/10-run1-summary-kb01.png)
 *Hình 14. Run 1: kết quả trên 5 PCAP tấn công. Chỉ có cảnh báo checksum.*
 
 Cảnh báo SID 2200074 **không phải phát hiện quét cổng**. Nó xuất hiện vì PCAP được bắt ngay trên Victim: card mạng tính checksum cho gói đi ra bằng phần cứng (checksum offload), nên tcpdump ghi lại checksum chưa hoàn chỉnh. Số cảnh báo này khớp với số gói SYN-ACK mà Victim trả về cho cổng mở (1 ở các lần quét, 2 ở run4 vì có 2 cổng mở).
@@ -288,10 +288,10 @@ Run 2 dùng **đúng 17 PCAP** của Run 1. Cấu hình `suricata.yaml` và tùy
 | kb01_run4 (`-T4`, 65535 cổng) | **1** | 01/11/2026 16:21:45 | 192.168.100.10 → 192.168.100.20 |
 | kb01_run5 (`-T3`, 11 cổng) | **1** | 01/11/2026 16:19:36 | 192.168.100.10 → 192.168.100.20 |
 
-![Run 2 – tóm tắt](screenshots/11-run2-summary.png)
+![Run 2 – tóm tắt](imgs/11-run2-summary.png)
 *Hình 15. Run 2: mỗi PCAP tấn công có 1 cảnh báo SID 9000101; các PCAP bình thường không có (đã ẩn cảnh báo checksum để dễ đọc).*
 
-![Run 2 – thời điểm cảnh báo](screenshots/12-run2-alert-timestamps.png)
+![Run 2 – thời điểm cảnh báo](imgs/12-run2-alert-timestamps.png)
 *Hình 16. Thời điểm, IP nguồn và IP đích của 5 cảnh báo SID 9000101.*
 
 Mỗi lần quét chỉ sinh **1 cảnh báo**, kể cả run4 với 65 535 gói SYN, do `threshold` giới hạn 1 cảnh báo mỗi 60 giây cho mỗi nguồn. Vì vậy **số cảnh báo không phản ánh quy mô cuộc quét**. Muốn biết quy mô cần xem PCAP hoặc log flow.
@@ -309,7 +309,7 @@ Mỗi lần quét chỉ sinh **1 cảnh báo**, kể cả run4 với 65 535 gói
 | kb01_run5 (11 cổng) | 16:19:36.998 | 16:19:36.998 | < 0,001 s |
 | **Trung bình** | | | **≈ 0,32 s** |
 
-![Độ trễ phát hiện](screenshots/14-run2-latency.png)
+![Độ trễ phát hiện](imgs/14-run2-latency.png)
 *Hình 16b. Gói SYN đầu tiên và thời điểm cảnh báo 9000101 của 5 lần quét (ngày 01/11/2026, đồng hồ Victim). Lệnh đo được chạy ngày 04/11/2026 trên các PCAP và kết quả Run 2 đã lưu.*
 
 Luật cần 5 gói SYN có window 1024 trong 60 giây. Ở tốc độ T3/T4, nmap gửi đủ 5 gói gần như tức thì. Riêng run1 dùng `-T2` (nmap chờ khoảng 0,4 giây giữa các gói), nên mất khoảng 1,6 giây mới đủ ngưỡng.
@@ -335,7 +335,7 @@ Luật cần 5 gói SYN có window 1024 trong 60 giây. Ở tốc độ T3/T4, n
 | benign_11 | DNS + tải file | 457 | 0 | 0 | 2034636 ×11, checksum |
 | benign_12 | 120 request curl dồn dập | 721 | 0 | **0** | 2034636 ×120, checksum |
 
-![Run 1 – kết quả trên lưu lượng bình thường](screenshots/09-run1-summary-benign.png)
+![Run 1 – kết quả trên lưu lượng bình thường](imgs/09-run1-summary-benign.png)
 *Hình 17. Run 1: cảnh báo trên các PCAP bình thường. Chỉ có cảnh báo checksum và SID 2034636.*
 
 Nhận xét:
@@ -398,7 +398,7 @@ Run 2 đạt vì luật mới **phù hợp với hành vi mục tiêu**: bắt �
 | `summary-run1.txt`, `summary-run2.txt` | Bảng tóm tắt cảnh báo theo từng PCAP |
 | `screenshots/` | Ảnh minh chứng |
 
-![Kiểm tra file bằng chứng](screenshots/13-evidence-files.png)
+![Kiểm tra file bằng chứng](imgs/13-evidence-files.png)
 *Hình 18. Số dòng các file trích sự kiện trước khi nộp.*
 
 
