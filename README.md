@@ -10,7 +10,7 @@
 | [01_Tai_lieu_huong_dan](01_Tai_lieu_huong_dan/) | Hướng dẫn chuẩn bị máy ảo, thiết lập mạng và cài đặt Suricata |
 | [02_Cau_hinh_Suricata](02_Cau_hinh_Suricata/) | Cấu hình, quy tắc và lệnh vận hành Suricata |
 | [03_Kich_ban_thuc_nghiem](03_Kich_ban_thuc_nghiem/) | 13 kịch bản thực nghiệm theo nội dung báo cáo |
-| [04_Decision_Tree](04_Decision_Tree/) | Mã nguồn và kết quả mô hình Decision Tree |
+| [04_Decision_Tree](04_Decision_Tree/) | Mã nguồn, dữ liệu đặc trưng và kết quả mô hình Decision Tree |
 | [05_Danh_gia](05_Danh_gia/) | Phương pháp và kết quả đánh giá |
 
 ## Môi trường thực nghiệm
