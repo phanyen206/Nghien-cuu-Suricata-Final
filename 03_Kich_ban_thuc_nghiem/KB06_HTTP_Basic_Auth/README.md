@@ -28,8 +28,8 @@ Lưu lượng mạng phát sinh được thu thập bằng tcpdump dưới dạn
 
 | Thành phần | Địa chỉ / thông tin | Vai trò |
 |---|---|---|
-| Attacker | 192.168.190.131/24 | Thực hiện kiểm thử bằng Hydra |
-| Victim | 192.168.190.130/24 | Chạy Apache HTTP Server và Suricata |
+| Attacker | 192.168.100.10/24 | Thực hiện kiểm thử bằng Hydra |
+| Victim | 192.168.100.20/24 | Chạy Apache HTTP Server và Suricata |
 | Giao diện mạng | ens37 | Kết nối mạng lab |
 | Dịch vụ đích | TCP/80 (HTTP) | Dịch vụ được kiểm thử |
 | Tài nguyên bảo vệ | /secure/ | HTTP Basic Authentication |
