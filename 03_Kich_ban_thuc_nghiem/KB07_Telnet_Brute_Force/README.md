@@ -2,469 +2,283 @@
 
 # KB07 – TELNET BRUTE FORCE
 
-## 1. Thông tin nhiệm vụ
+## 1. Giới thiệu
 
-- **Người phụ trách:** Uyên
-- **Tên kịch bản:** KB07 – Telnet Brute Force
-- **Nhóm tấn công:** Mật khẩu (Password)
-- **MITRE ATT&CK:** T1110.001 – Password Guessing
-- **Công cụ kiểm thử:** THC Hydra, Expect, Telnet
-- **Công cụ giám sát và phát hiện:** Suricata 8.0.3 RELEASE
-- **SID luật tự xây dựng:** 1000022
+Kịch bản KB07 mô phỏng hành vi dò đoán mật khẩu Telnet (Telnet Brute Force) trong mạng lab. Máy Attacker sử dụng Hydra và Expect để tạo các phiên đăng nhập thất bại đến máy Victim. Suricata giám sát lưu lượng TCP/23, đánh giá khả năng phát hiện của bộ luật ET Open và luật tự xây dựng SID 1000022.
 
-## 2. Mục tiêu thực hiện
+- **MITRE ATT&CK:** T1110.001 – Password Guessing.
+- **Công cụ kiểm thử:** THC Hydra, Expect.
+- **Hệ thống giám sát:** Suricata 8.0.3 RELEASE.
+- **Luật tự xây dựng:** SID 1000022 – LAB BRUTE TELNET multiple failed logins.
 
-Nhiệm vụ KB07 nhằm mô phỏng hành vi tấn công vét cạn mật khẩu thông qua giao thức Telnet trên máy Victim, từ đó đánh giá khả năng phát hiện của hệ thống Suricata.
-
-Các mục tiêu cụ thể:
-
-- Thiết lập kết nối mạng giữa máy Attacker và Victim.
-- Cài đặt và cấu hình dịch vụ Telnet trên Victim.
-- Tạo tài khoản thử nghiệm và kiểm tra khả năng đăng nhập.
-- Sử dụng Hydra để mô phỏng hành vi thử nhiều mật khẩu.
-- Xây dựng luật Suricata nhằm phát hiện nhiều lần đăng nhập Telnet thất bại.
-- Đánh giá khả năng phát hiện của bộ luật ET Open và luật tự xây dựng.
-- Kiểm tra cảnh báo trong nhật ký `eve.json` và `fast.log`.
-- Kiểm tra hoạt động của luật với lưu lượng đăng nhập hợp lệ nhằm đánh giá false positive.
-- Thu thập PCAP và log phục vụ phân tích kết quả.
-
-## 3. Môi trường thực nghiệm
-
-Mô hình thực nghiệm sử dụng hai máy ảo Ubuntu được kết nối thông qua mạng LAN Segment trên VMware.
+## 2. Môi trường thực nghiệm
 
 | Thành phần | Thông tin |
 |---|---|
-| Máy Attacker | Ubuntu |
-| Địa chỉ IP Attacker | 192.168.190.131 |
-| Máy Victim | Ubuntu |
-| Địa chỉ IP Victim | 192.168.190.130 |
-| Giao thức kiểm thử | Telnet/TCP |
-| Cổng dịch vụ | 23 |
-| Công cụ tấn công mô phỏng | THC Hydra |
-| Công cụ tự động hóa kiểm thử | Expect |
-| Công cụ phát hiện | Suricata 8.0.3 RELEASE |
-| Dịch vụ Telnet | inetutils-telnetd |
+| Attacker | 192.168.100.10/24 |
+| Victim | 192.168.100.20/24 |
+| Interface Victim | ens37 |
+| Dịch vụ | Telnet – TCP/23 |
 | Tài khoản thử nghiệm | telnet_test |
-| Giao diện mạng Victim | ens37 |
 
-## 4. Các bước triển khai thực nghiệm
+## 3. Các bước thực hiện
 
-### 4.1. Kiểm tra kết nối mạng giữa Attacker và Victim
+### Bước 1. Kiểm tra kết nối mạng
 
-Sau khi khởi động hai máy ảo, tiến hành kiểm tra địa chỉ IP và khả năng kết nối mạng.
-
-Địa chỉ IP thực tế được sử dụng:
-
-- Attacker: `192.168.190.131`
-- Victim: `192.168.190.130`
-
-Kết quả kiểm tra cho thấy hai máy có thể liên lạc với nhau thông qua mạng lab. Các lần kiểm tra ping được ghi nhận đều thành công, không có gói tin bị mất.
-
-### 4.2. Cài đặt và cấu hình dịch vụ Telnet trên Victim
-
-Trên máy Victim, tiến hành cài đặt dịch vụ Telnet bằng các gói `inetutils-telnetd` và `inetutils-inetd`.
-
-Bật dịch vụ Telnet:
-
+**Trên Attacker:**
 ```bash
-sudo update-inetd --enable telnet
+ip -br -4 addr
+ping -c 4 192.168.190.130
 ```
 
-Khởi động lại dịch vụ:
-
+**Trên Victim:**
 ```bash
-sudo systemctl restart inetutils-inetd
+ip -br -4 addr
+ping -c 4 192.168.190.131
 ```
 
-Kiểm tra trạng thái dịch vụ:
+**Kết quả:** Hai máy liên lạc hai chiều thành công, tỷ lệ mất gói 0% trong lượt kiểm tra.
 
+### Bước 2. Kiểm tra dịch vụ Telnet
+
+**Trên Victim:**
 ```bash
-sudo systemctl status inetutils-inetd
-```
-
-Kiểm tra cổng Telnet:
-
-```bash
+dpkg -l | grep -E 'inetutils-(telnetd|inetd)'
+grep -n 'telnet stream' /etc/inetd.conf
+sudo systemctl status inetutils-inetd --no-pager
 sudo ss -lntp | grep ':23'
 ```
 
-Kết quả xác nhận dịch vụ Telnet hoạt động và lắng nghe trên cổng TCP/23.
+**Kết quả:** Dịch vụ Telnet đã được cài đặt, inetutils-inetd ở trạng thái active (running) và cổng TCP/23 đang LISTEN.
 
-### 4.3. Tạo tài khoản thử nghiệm và kiểm tra đăng nhập
+Kiểm tra tài khoản:
+```bash
+id telnet_test
+```
 
-Tạo tài khoản thử nghiệm trên máy Victim:
-
-- Username: `telnet_test`
-- Password: Mật khẩu thử nghiệm được thiết lập riêng trong môi trường lab.
-
-Tiến hành kiểm tra từ máy Attacker:
-
+**Trên Attacker**, kết nối thử:
 ```bash
 telnet 192.168.190.130
 ```
 
-Nhập thông tin tài khoản thử nghiệm.
+Kiểm tra cả đăng nhập sai (nhận `Login incorrect`) và đăng nhập hợp lệ.
 
-Kết quả kiểm tra ghi nhận:
+<img width="903" height="475" alt="image" src="https://github.com/user-attachments/assets/75d72e02-f775-4922-937d-5634376d4199" />
 
-- Khi nhập sai mật khẩu, máy Victim trả về `Login incorrect`.
-- Khi nhập đúng thông tin xác thực, người dùng đăng nhập thành công và nhận được shell của hệ thống.
+### Bước 3. Chuẩn bị công cụ và thực hiện kiểm thử
 
-Kết quả xác nhận dịch vụ Telnet hoạt động bình thường trước khi tiến hành kiểm thử.
-
-### 4.4. Chuẩn bị Hydra và danh sách mật khẩu
-
-Trên máy Attacker, sử dụng THC Hydra để mô phỏng hành vi thử nhiều mật khẩu đối với tài khoản Telnet.
-
-Danh sách mật khẩu thử nghiệm được lưu tại:
-
-```text
-/home/nhung/kb09-passwords.txt
-```
-
-Tạo danh sách một mật khẩu sai phục vụ kiểm thử nhiều phiên kết nối riêng biệt:
-
+**Trên Attacker:**
 ```bash
-head -n 1 ~/kb09-passwords.txt > ~/kb09-one-wrong.txt
+hydra -h | head -n 5
+wc -l ~/kb09-passwords.txt
+ls -lh ~/kb09-passwords.txt
 ```
 
-Kiểm tra số lượng dòng:
-
-```bash
-wc -l ~/kb09-one-wrong.txt
-```
-
-Kết quả ghi nhận danh sách kiểm thử riêng có 1 dòng.
-
-Lệnh Hydra được sử dụng:
-
+Thực hiện kiểm thử bằng Hydra:
 ```bash
 hydra -l telnet_test -P ~/kb09-passwords.txt telnet://192.168.190.130 -t 1 -W 5 -V -d
 ```
 
-Trong đó:
-
-- `-l telnet_test`: Tài khoản được sử dụng để kiểm thử.
-- `-P`: Đường dẫn đến danh sách mật khẩu.
-- `-t 1`: Sử dụng một tác vụ đồng thời.
-- `-W 5`: Thời gian chờ thiết lập kết nối.
-- `-V`: Hiển thị chi tiết từng lần thử.
-- `-d`: Bật chế độ debug.
-- `telnet://192.168.190.130`: Máy Victim cung cấp dịch vụ Telnet.
-
-Trong quá trình thử nghiệm, Hydra có một số lần không phân tích ổn định phản hồi Telnet. Vì vậy, nhóm sử dụng thêm Expect để tự động hóa các phiên đăng nhập sai riêng biệt, bảo đảm dữ liệu PCAP có thể ghi nhận các phản hồi `Login incorrect`.
-
-### 4.5. Tự động hóa các phiên đăng nhập sai bằng Expect
-
-Cài đặt Expect trên máy Attacker:
-
+Do kết quả xác thực Telnet của Hydra không ổn định, sử dụng thêm Expect để tạo 5 phiên đăng nhập thất bại:
 ```bash
-sudo apt install -y expect
+ls -lh ~/kb09-test5.exp
+expect ~/kb09-test5.exp
 ```
 
-Kiểm tra phiên bản:
+**Kết quả:** Expect tạo 5 phiên đăng nhập thất bại riêng biệt, mỗi phiên nhận phản hồi `Login incorrect`. Không khẳng định Hydra tìm được mật khẩu hợp lệ nếu đầu ra thực tế không chứng minh điều đó.
 
+<img width="852" height="58" alt="image" src="https://github.com/user-attachments/assets/167b70cd-330a-41c9-bd1c-74ac262abe18" />
+
+<img width="539" height="707" alt="image" src="https://github.com/user-attachments/assets/2b058e4b-268c-416f-b138-4bcf9a22a1ff" />
+
+<img width="559" height="682" alt="image" src="https://github.com/user-attachments/assets/9e23d9a1-e5af-42ca-be25-5ba13a14ad74" />
+
+
+### Bước 4. Kiểm tra cấu hình Suricata và luật tự xây dựng
+
+**Trên Victim:**
 ```bash
-expect -v
+sudo grep -n -A 8 'HOME_NET:' /etc/suricata/suricata.yaml
+sudo grep -n -A 3 '^rule-files:' /etc/suricata/suricata.yaml
+sudo grep -n -A 2 'af-packet:' /etc/suricata/suricata.yaml
+sudo suricata -T -c /etc/suricata/suricata.yaml
 ```
 
-Kết quả ghi nhận Expect phiên bản `5.45.4`.
-
-Tạo script:
-
-```text
-~/kb09-test5.exp
-```
-
-Script thực hiện 5 phiên Telnet riêng biệt. Trong mỗi phiên, chương trình gửi username `telnet_test`, nhập mật khẩu sai, kiểm tra phản hồi `Login incorrect`, sau đó đóng kết nối và chuyển sang phiên tiếp theo.
-
-Kết quả thực nghiệm:
-
-- Lần 1: Đăng nhập thất bại.
-- Lần 2: Đăng nhập thất bại.
-- Lần 3: Đăng nhập thất bại.
-- Lần 4: Đăng nhập thất bại.
-- Lần 5: Đăng nhập thất bại.
-
-Cả 5 phiên đều nhận được phản hồi `Login incorrect`.
-
-### 4.6. Kiểm thử Run 1 – Chỉ sử dụng bộ luật ET Open
-
-Ở lần kiểm thử thứ nhất, tiến hành sử dụng bộ luật ET Open mà không nạp luật tự xây dựng `local.rules`.
-
-Tạo thư mục lưu kết quả:
-
+Kiểm tra luật:
 ```bash
-mkdir -p ~/kb09-run1
+sudo grep -n 'LAB BRUTE TELNET' /var/lib/suricata/rules/local.rules
 ```
 
-Tạo file cấu hình riêng:
-
-```bash
-sudo cp /etc/suricata/suricata.yaml /tmp/kb09-run1.yaml
-```
-
-Tắt việc nạp `local.rules` trong cấu hình Run 1, giữ nguyên bộ luật ET Open.
-
-Kiểm tra cấu hình:
-
-```bash
-sudo suricata -T -c /tmp/kb09-run1.yaml
-```
-
-Khởi chạy Suricata:
-
-```bash
-sudo suricata -c /tmp/kb09-run1.yaml -i ens37 -l /home/nhung/kb09-run1
-```
-
-Trong quá trình kiểm thử, lưu lại lưu lượng mạng bằng tcpdump:
-
-```bash
-sudo tcpdump -i ens37 -nn 'host 192.168.190.131 and tcp port 23' -w ~/kb09-run1/kb09-run1.pcap
-```
-
-Sau khi hoàn tất, kiểm tra số lượng cảnh báo:
-
-```bash
-sudo grep -ac '"event_type":"alert"' ~/kb09-run1/eve.json
-```
-
-Kiểm tra nhật ký:
-
-```bash
-sudo cat ~/kb09-run1/fast.log
-```
-
-Kết quả thực nghiệm ghi nhận:
-
-| Trường thông tin | Giá trị |
-|---|---|
-| Tổng số alert | 6 |
-| SID 2101251 | 1 |
-| SID 2221010 | 5 |
-| Cảnh báo liên quan Telnet | GPL TELNET Bad Login |
-| Cảnh báo khác | SURICATA HTTP unable to match response to request |
-
-Nhận xét:
-
-ET Open đã phát hiện hành vi đăng nhập Telnet thất bại thông qua SID `2101251` – `GPL TELNET Bad Login`.
-
-Tuy nhiên, trong tổng số 6 alert, chỉ có 1 alert liên quan trực tiếp đến đăng nhập Telnet thất bại. Các alert còn lại thuộc SID `2221010`, không phải cảnh báo chuyên biệt cho hành vi Telnet Brute Force.
-
-### 4.7. Xây dựng luật phát hiện Telnet Brute Force trên Suricata
-
-Trên máy Victim, bổ sung luật tự xây dựng vào file:
-
-```text
-/var/lib/suricata/rules/local.rules
-```
-
-Nội dung luật cuối cùng:
-
+**Luật SID 1000022 đã xác minh trong tài liệu:**
 ```text
 alert tcp $HOME_NET 23 -> any any (msg:"LAB BRUTE TELNET multiple failed logins"; flow:established; content:"Login incorrect"; nocase; detection_filter:track by_dst, count 4, seconds 60; classtype:attempted-admin; sid:1000022; rev:7;)
 ```
 
-Giải thích luật:
+**Kết quả:** HOME_NET là `192.168.190.130`, interface giám sát `ens37`; hai file luật `suricata.rules` và `local.rules` được khai báo. Cấu hình Suricata kiểm tra nạp thành công.
 
-- `alert tcp`: Tạo cảnh báo khi phát hiện lưu lượng TCP phù hợp.
-- `$HOME_NET 23 -> any any`: Theo dõi lưu lượng xuất phát từ cổng Telnet 23 của mạng nội bộ.
-- `flow:established`: Chỉ kiểm tra kết nối TCP đã được thiết lập.
-- `content:"Login incorrect"`: Tìm chuỗi phản hồi thể hiện đăng nhập thất bại.
-- `nocase`: Không phân biệt chữ hoa và chữ thường.
-- `detection_filter`: Áp dụng cơ chế lọc theo số lần xuất hiện.
-- `track by_dst`: Theo dõi theo địa chỉ IP đích.
-- `count 4, seconds 60`: Cấu hình ngưỡng thử nghiệm trong khoảng thời gian 60 giây. Trong lần kiểm thử thực tế, luật đã phát cảnh báo khi ghi nhận 5 lần đăng nhập sai.
-- `classtype:attempted-admin`: Phân loại hành vi có dấu hiệu thử truy cập trái phép.
-- `sid:1000022`: Mã định danh của luật.
-- `rev:7`: Phiên bản luật.
+<img width="609" height="226" alt="image" src="https://github.com/user-attachments/assets/14b341cd-9ca8-4f4e-97fe-c0ffcfce833b" />
 
-Kiểm tra cấu hình Suricata:
+<img width="602" height="78" alt="image" src="https://github.com/user-attachments/assets/3ed5ee8d-32e0-4fca-84f4-f8e1eda5e76d" />
 
+<img width="598" height="58" alt="image" src="https://github.com/user-attachments/assets/ea7ec60b-f7ae-4a1b-b12f-f6286c90fed1" />
+
+<img width="607" height="34" alt="image" src="https://github.com/user-attachments/assets/cdd22712-8808-40ea-b540-bd31b2d977c2" />
+
+<img width="609" height="92" alt="image" src="https://github.com/user-attachments/assets/46479873-5028-4d66-afdf-5a94bf91d06a" />
+
+### Bước 5. Run 1 – Sử dụng ET Open
+
+Sao chép cấu hình và tắt `local.rules`:
 ```bash
-sudo suricata -T -c /etc/suricata/suricata.yaml
+sudo cp /etc/suricata/suricata.yaml /tmp/kb09-run1.yaml
+sudo sed -i '/^[[:space:]]*-[[:space:]]*local\.rules[[:space:]]*$/s/^/#/' /tmp/kb09-run1.yaml
+grep -n -A 3 '^rule-files:' /tmp/kb09-run1.yaml
+sudo suricata -T -c /tmp/kb09-run1.yaml
 ```
 
-Kết quả:
-
-```text
-Configuration provided was successfully loaded. Exiting.
-```
-
-Kết quả xác nhận cấu hình hợp lệ, trong đó cả bộ luật ET Open và `local.rules` đều được nạp.
-
-### 4.8. Kiểm thử Run 2 – Bật luật tự xây dựng
-
-Ở Run 2, tiến hành bật cả bộ luật ET Open và luật tự xây dựng SID `1000022`.
-
-Tạo thư mục lưu kết quả:
-
+**Trên Victim – Terminal 1**, chạy Suricata:
 ```bash
-mkdir -p ~/kb09-run2-custom
+sudo systemctl stop suricata
+sudo systemctl is-active suricata
+sudo suricata -c /tmp/kb09-run1.yaml -i ens37 -l /home/nhung/kb09-run1
 ```
 
-Khởi chạy Suricata với cấu hình đầy đủ:
-
+**Trên Victim – Terminal 2**, bắt lưu lượng:
 ```bash
-sudo suricata -c /etc/suricata/suricata.yaml -i ens37 -l /home/nhung/kb09-run2-custom
+sudo tcpdump -i ens37 -nn 'host 192.168.190.131 and tcp port 23' -w ~/kb09-run1/kb09-run1.pcap
 ```
 
-Đồng thời sử dụng tcpdump để lưu lại lưu lượng kiểm thử:
-
+**Trên Attacker**, chạy lại kịch bản kiểm thử:
 ```bash
-sudo tcpdump -i ens37 -nn 'host 192.168.190.131 and tcp port 23' -w ~/kb09-run2-custom/kb09-run2-custom.pcap
+hydra -l telnet_test -P ~/kb09-passwords.txt telnet://192.168.190.130 -t 1 -W 5 -V -d
 ```
 
-Thực hiện 5 phiên Telnet riêng biệt bằng script Expect đã chuẩn bị ở mục 4.5.
+Nếu cần tạo 5 phiên thất bại có thể kiểm chứng, sử dụng script Expect tương ứng. Sau khi hoàn tất, nhấn `Ctrl+C` để dừng tcpdump và tiến trình Suricata.
 
-Sau khi hoàn tất, kiểm tra PCAP:
-
+Kiểm tra kết quả:
 ```bash
-sudo tcpdump -nn -A -r ~/kb09-run2-custom/kb09-run2-custom.pcap 'tcp port 23' 2>/dev/null | grep -ic 'Login incorrect'
+grep -ac '"event_type":"alert"' ~/kb09-run1/eve.json
+grep -a '"event_type":"alert"' ~/kb09-run1/eve.json | grep -o '"signature_id":[0-9]*' | sort | uniq -c
+cat ~/kb09-run1/fast.log
+sudo tcpdump -nn -A -r ~/kb09-run1/kb09-run1.pcap 'tcp port 23' 2>/dev/null | grep -ic 'Login incorrect'
 ```
 
-Kết quả:
+**Kết quả Run 1:**
+- Tổng cộng 17 alert.
+- SID 2068415: 5 lần.
+- SID 2101251: 6 lần – GPL TELNET Bad Login.
+- SID 2221010: 6 lần.
+- PCAP ghi nhận 5 phản hồi `Login incorrect`.
 
-```text
-5
+ET Open đã phát hiện dấu hiệu đăng nhập Telnet thất bại, đặc biệt qua SID 2101251.
+
+<img width="609" height="66" alt="image" src="https://github.com/user-attachments/assets/f6abffc5-8b1e-4a4a-ae99-f4457751ebcc" />
+
+<img width="608" height="346" alt="image" src="https://github.com/user-attachments/assets/3c06123c-ecc3-4553-8049-940b8ae866b5" />
+
+### Bước 6. Run 2 – Bật luật tự xây dựng
+
+Kiểm tra luật và cấu hình:
+```bash
+sudo grep -n -A 3 '^rule-files:' /etc/suricata/suricata.yaml
+sudo grep -n 'LAB BRUTE TELNET' /var/lib/suricata/rules/local.rules
 ```
 
-Tiến hành phân tích lại PCAP bằng Suricata:
-
+Phân tích offline PCAP Run 2 bằng cấu hình có cả ET Open và local.rules:
 ```bash
 mkdir -p ~/kb09-run2-custom/replay2
 
-sudo suricata -r ~/kb09-run2-custom/kb09-run2-custom.pcap -c /etc/suricata/suricata.yaml -l ~/kb09-run2-custom/replay2
+sudo suricata -r ~/kb09-run2-custom/kb09-run2-custom.pcap \
+-c /etc/suricata/suricata.yaml \
+-l ~/kb09-run2-custom/replay2
 ```
 
-Kiểm tra cảnh báo SID `1000022` trong `eve.json`:
-
+Kiểm tra cảnh báo:
 ```bash
 sudo grep -ac '"signature_id":1000022' ~/kb09-run2-custom/replay2/eve.json
+sudo grep -a 'LAB BRUTE TELNET' ~/kb09-run2-custom/replay2/fast.log
 ```
 
-Kết quả ghi nhận:
+**Kết quả Run 2:**
+- PCAP ghi nhận 5 phản hồi `Login incorrect`.
+- Suricata đọc 185 packets.
+- Ghi nhận 2 alert theo SID 1000022 trong `eve.json`.
+- `fast.log` xác nhận 2 dòng cảnh báo của luật tự xây dựng.
 
-```text
-1
-```
+Lưu ý: Hai alert có cùng timestamp và cùng luồng TCP, không được xem là hai đợt tấn công riêng biệt. Run 1 và Run 2 sử dụng hai PCAP khác nhau nên không thể coi đây là phép so sánh trực tiếp trên cùng một dữ liệu.
 
-Thông tin alert:
+<img width="600" height="226" alt="image" src="https://github.com/user-attachments/assets/15b9c97e-b7f0-4248-bc86-77489d3ccbeb" />
 
-| Trường thông tin | Giá trị |
-|---|---|
-| SID | 1000022 |
-| Revision | 7 |
-| Signature | LAB BRUTE TELNET multiple failed logins |
-| Category | Attempted Administrator Privilege Gain |
-| Severity | 1 |
-| Protocol | TCP |
-| Source IP | 192.168.190.130 |
-| Source port | 23 |
-| Destination IP | 192.168.190.131 |
-| Destination port | 47480 |
+### Bước 7. Kiểm tra lưu lượng lành tính (Benign)
 
-Kết quả chứng minh luật tự xây dựng SID `1000022` đã phát hiện được hành vi đăng nhập Telnet thất bại trong lần kiểm thử có 5 phiên đăng nhập sai.
-
-### 4.9. Đo độ trễ phát hiện
-
-Tiến hành đối chiếu timestamp của cảnh báo trong `eve.json` với thời điểm phản hồi `Login incorrect` thứ 5 trong PCAP.
-
-Kết quả ghi nhận 5 timestamp phản hồi:
-
-| Lần | Timestamp Unix |
-|---|---|
-| 1 | 1793559873.225041 |
-| 2 | 1793559875.884384 |
-| 3 | 1793559879.217908 |
-| 4 | 1793559879.476819 |
-| 5 | 1793559885.682400 |
-
-Timestamp alert trong `eve.json`:
-
-```text
-2026-11-02T02:04:30.880550+0700
-```
-
-Do timestamp alert và timestamp phản hồi trong PCAP không khớp thứ tự thời gian, chưa thể xác định chính xác độ trễ phát hiện từ dữ liệu hiện có.
-
-Vì vậy, độ trễ phát hiện được ghi nhận là **chưa xác định chính xác**, cần kiểm tra lại cách đồng bộ và ghi nhận timestamp trước khi thực hiện phép đo chính thức.
-
-### 4.10. Kiểm tra cảnh báo sai bằng lưu lượng lành tính
-
-Để đánh giá khả năng phát sinh cảnh báo sai, tiến hành tạo một phiên đăng nhập Telnet hợp lệ từ Attacker đến Victim.
-
-Sử dụng tài khoản thử nghiệm:
-
-- Username: `telnet_test`
-- Password: Mật khẩu hợp lệ đã thiết lập trên Victim.
-
-Thực hiện kết nối:
-
+**Trên Attacker:** Thực hiện một phiên đăng nhập Telnet hợp lệ:
 ```bash
 telnet 192.168.190.130
 ```
 
-Nhập thông tin xác thực hợp lệ và kiểm tra khả năng đăng nhập.
+Nhập tài khoản `telnet_test` cùng mật khẩu hợp lệ, sau đó thoát bằng `exit`.
 
-Kết quả ghi nhận người dùng đăng nhập thành công, nhận được shell của hệ thống và thoát phiên Telnet bình thường.
+**Trên Victim:** Kiểm tra kết quả:
+```bash
+ls -lh ~/kb09-run2-custom/benign/
+grep -ac '"signature_id":1000022' ~/kb09-run2-custom/benign/eve.json
+cat ~/kb09-run2-custom/benign/fast.log
+```
 
-Kiểm tra số lượng cảnh báo SID `1000022`:
+**Kết quả:**
+- Không ghi nhận alert SID 1000022.
+- ET Open vẫn ghi nhận một cảnh báo SID 2068415.
+- Luật tự xây dựng không kích hoạt trong phiên đăng nhập hợp lệ được kiểm tra.
+
+Lưu ý: Benign mới được kiểm tra trên một phiên đăng nhập hợp lệ, chưa đủ cơ sở để kết luận tỷ lệ false positive bằng 0 trong mọi tình huống.
+
+<img width="579" height="470" alt="image" src="https://github.com/user-attachments/assets/65c58333-1442-4644-a17f-25d878712f04" />
+
+<img width="611" height="102" alt="image" src="https://github.com/user-attachments/assets/6e241dab-a66d-4e75-9522-b649634c355d" />
+
+### Bước 8. Lưu trữ dữ liệu và kiểm tra kết quả
 
 ```bash
-sudo grep -ac '"signature_id":1000022' ~/kb09-run2-custom/benign/eve.json
+ls -lh ~/KB09/Run1_ET_Open/
+ls -lh ~/KB09/Run2_Custom/
+ls -lh ~/KB09/Benign/
+grep -n 'LAB BRUTE TELNET' ~/KB09/Rules/local.rules
+find ~/KB09 -maxdepth 3 -type f -printf '%P (%k KB)\n' | sort
 ```
 
-Kết quả:
+Dữ liệu cần lưu gồm:
+- PCAP của Run 1 và Run 2.
+- `eve.json`, `fast.log`, `stats.log`, `suricata.log`.
+- File `local.rules` chứa SID 1000022.
+- Dữ liệu kiểm thử Benign.
 
-```text
-0
-```
+<img width="546" height="347" alt="image" src="https://github.com/user-attachments/assets/0e2c447c-9570-48b5-a229-51b82fca6985" />
+  
+<img width="600" height="248" alt="image" src="https://github.com/user-attachments/assets/f1d62c1c-5cf9-4957-a911-1aed69e38838" />
 
-Nhận xét:
+## 4. Tổng hợp kết quả
 
-- Đăng nhập Telnet hợp lệ thành công.
-- Không phát sinh cảnh báo mới từ luật tự xây dựng SID `1000022`.
-- Số lượng false positive quan sát được trong lần thử nghiệm này là 0.
-
-Kết quả chỉ phản ánh một lần đăng nhập hợp lệ được kiểm tra, chưa đại diện cho mọi loại lưu lượng lành tính.
-
-## 5. Tổng hợp kết quả thực nghiệm
-
-| Nội dung đánh giá | Kết quả |
+| Nội dung | Kết quả |
 |---|---|
-| Kết nối mạng Attacker – Victim | Thành công |
-| Cài đặt và khởi động dịch vụ Telnet | Thành công |
-| Kiểm tra đăng nhập Telnet hợp lệ | Thành công |
-| Kiểm tra phản hồi đăng nhập sai | Thành công |
-| Hydra thực hiện kiểm thử | Đã thử nghiệm, có hạn chế tương thích |
-| Expect tự động hóa 5 phiên Telnet | Thành công |
-| Số lần đăng nhập sai trong Run 2 | 5 |
-| Run 1 – Tổng số alert ET Open | 6 |
-| Run 1 – SID GPL TELNET Bad Login | 2101251 (1 alert) |
-| Run 2 – Custom alert | 1 |
-| SID luật tự xây dựng | 1000022 |
-| Revision luật | 7 |
-| Benign traffic | 1 lần đăng nhập hợp lệ |
-| Alert custom trong benign traffic | 0 |
-| False Positive quan sát được | 0 |
-| Độ trễ phát hiện | Chưa xác định chính xác |
+| Kết nối mạng | Ping hai chiều thành công |
+| Dịch vụ Telnet | inetutils-inetd active; TCP/23 LISTEN |
+| Hydra | Đã thực hiện; kết quả xác thực không ổn định |
+| Expect | 5 phiên đăng nhập thất bại |
+| PCAP Run 1 | 5 phản hồi `Login incorrect` |
+| Run 1 – ET Open | 17 alert |
+| Run 2 – Custom rule | 2 alert SID 1000022 |
+| Benign | 1 phiên hợp lệ; 0 alert SID 1000022 |
+| Latency | Chưa xác định chính xác |
 
-## 6. Kết luận
+## 5. Kết luận
 
-Nhiệm vụ KB07 đã hoàn thành các bước triển khai môi trường Telnet, mô phỏng hành vi đăng nhập sai nhiều lần và xây dựng luật phát hiện trên Suricata.
+Kịch bản KB07 đã triển khai thành công dịch vụ Telnet trên máy Victim, tạo các phiên đăng nhập thất bại và thu thập lưu lượng TCP/23 để phân tích bằng Suricata.
 
-Kết quả thực nghiệm cho thấy bộ luật ET Open đã phát hiện hành vi đăng nhập Telnet thất bại thông qua SID `2101251` – `GPL TELNET Bad Login`.
+Trong Run 1, ET Open ghi nhận 17 alert, trong đó SID 2101251 – GPL TELNET Bad Login phản ánh trực tiếp các lần đăng nhập Telnet thất bại. Ở Run 2, luật tự xây dựng SID 1000022 được kích hoạt với 2 alert khi phân tích PCAP có 5 phản hồi `Login incorrect`.
 
-Trong Run 2, luật tự xây dựng SID `1000022` đã phát hiện được hành vi đăng nhập Telnet thất bại sau khi kiểm thử 5 phiên kết nối riêng biệt. Cảnh báo được ghi nhận trong `eve.json`.
+Trong thử nghiệm Benign, luật SID 1000022 không phát cảnh báo đối với phiên đăng nhập hợp lệ đã kiểm tra, mặc dù ET Open vẫn ghi nhận một cảnh báo riêng. Kết quả cho thấy luật tự xây dựng có khả năng nhận diện các lần đăng nhập thất bại lặp lại theo điều kiện đã thiết lập và không kích hoạt trong mẫu đăng nhập hợp lệ được thử nghiệm.
 
-Khi kiểm tra bằng một phiên đăng nhập hợp lệ, luật tự xây dựng không phát sinh cảnh báo sai.
-
-Tuy nhiên, độ trễ phát hiện chưa thể xác định chính xác do timestamp giữa PCAP và EVE chưa khớp. Đây là hạn chế cần được kiểm tra bổ sung nếu yêu cầu đánh giá latency chính thức.
-
-Như vậy, KB07 đã hoàn thành phần triển khai và kiểm thử phát hiện cơ bản trong môi trường lab, đồng thời đã lưu trữ PCAP, log và luật tự xây dựng để phục vụ việc kiểm tra, đánh giá và báo cáo.
-
+Một số giới hạn cần lưu ý: Hydra không có kết quả xác thực ổn định; Expect được sử dụng bổ sung để tạo các phiên thất bại có thể kiểm chứng. Độ trễ phát hiện chưa xác định chính xác và dữ liệu Benign mới chỉ gồm một phiên đăng nhập hợp lệ. Ngoài ra, Run 1 và Run 2 sử dụng hai PCAP riêng biệt nên chưa đủ cơ sở để so sánh định lượng trực tiếp hiệu quả của hai cấu hình trên cùng dữ liệu.
 
 ## Tệp nguồn và minh chứng gốc
 
