@@ -1,5 +1,3 @@
-> **Hướng dẫn người đọc:** README này mô tả mục tiêu, môi trường, thứ tự tái lập và cách kiểm tra kết quả. Hãy đọc phần môi trường và lệnh trước khi chạy script; cập nhật IP/interface theo lab của bạn. Chỉ chạy trong mạng ảo được phép.
-
 # KB02 – Phát hiện hành vi dò quét cổng UDP (nmap -sU) trên máy chủ nội bộ
 
 | Mục | Nội dung |
@@ -63,7 +61,7 @@ Ghi chú môi trường:
 - Từ KB02, hostname của hai máy đã được đổi thành `Ubuntu-Attacker` và `Ubuntu-Victim` để ảnh chụp dễ phân biệt. Cấu hình IP và Suricata giống KB01, xem minh chứng IP, `ip route` và `suricata -T` trong README KB01.
 - Sau khi mở lại máy ảo từ trạng thái suspend, đồng hồ được đặt bằng tay. Kết quả là **đồng hồ Attacker chậm hơn Victim khoảng 2 phút**. Mọi thời điểm trong báo cáo này đều lấy theo **đồng hồ Victim** (PCAP và Suricata).
 
-![Victim sau khi đổi hostname và chỉnh giờ](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/01-victim-hostname-date.png)
+![Victim sau khi đổi hostname và chỉnh giờ](screenshots/01-victim-hostname-date.png)
 *Hình 1. Victim sau khi đổi hostname (`Ubuntu-Victim`) và chỉnh đồng hồ về 03/11.*
 
 ### Dịch vụ UDP đang mở trên Victim
@@ -75,7 +73,7 @@ Ghi chú môi trường:
 | 3702 | python3 (WS-Discovery) | Có (không nằm trong các dải cổng được quét) |
 | 127.0.0.53/54:53, 127.0.0.1:323 | systemd-resolved, chronyd | Không, chỉ cục bộ |
 
-![Cổng UDP đang mở trên Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/04-victim-udp-listening-ports.png)
+![Cổng UDP đang mở trên Victim](screenshots/04-victim-udp-listening-ports.png)
 *Hình 2. `sudo ss -ulnp` trên Victim.*
 
 ---
@@ -114,35 +112,35 @@ Nhận xét:
 
 **run1:** `--top-ports 100`, đúng lệnh `attack.sh`
 
-![run1 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run1-attacker.png)
-![run1 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run1-victim.png)
+![run1 – Attacker](screenshots/kb02-run1-attacker.png)
+![run1 – Victim](screenshots/kb02-run1-victim.png)
 *Hình 3. run1: nmap quét 100 cổng trong 108,34 s; PCAP có 276 gói UDP và 111 gói ICMP.*
 
 **run2:** `-T2 --top-ports 20`
 
-![run2 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run2-attacker.png)
-![run2 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run2-victim.png)
+![run2 – Attacker](screenshots/kb02-run2-attacker.png)
+![run2 – Victim](screenshots/kb02-run2-victim.png)
 *Hình 4. run2: 20 cổng trong 19,90 s; 55 gói UDP và 27 gói ICMP.*
 
 **run3:** `-T4 --top-ports 100`
 
-![run3 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run3-attacker.png)
-![run3 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run3-victim.png)
+![run3 – Attacker](screenshots/kb02-run3-attacker.png)
+![run3 – Victim](screenshots/kb02-run3-victim.png)
 *Hình 5. run3: 52,28 s, 44 cổng `open|filtered`; 646 gói UDP và 60 gói ICMP.*
 
 **run4:** `-T4 --top-ports 200`
 
-![run4 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run4-attacker.png)
-![run4 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run4-victim.png)
+![run4 – Attacker](screenshots/kb02-run4-attacker.png)
+![run4 – Victim](screenshots/kb02-run4-victim.png)
 *Hình 6. run4: 180,74 s, có cảnh báo "retransmission cap hit"; 613 gói UDP và 188 gói ICMP.*
 
 **run5:** 10 cổng dịch vụ cụ thể
 
-![run5 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run5-attacker.png)
-![run5 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/kb02-run5-victim.png)
+![run5 – Attacker](screenshots/kb02-run5-attacker.png)
+![run5 – Victim](screenshots/kb02-run5-victim.png)
 *Hình 7. run5: 5,73 s; 56 gói UDP và 13 gói ICMP.*
 
-![Danh sách PCAP KB02](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/05-pcap-list.png)
+![Danh sách PCAP KB02](screenshots/05-pcap-list.png)
 *Hình 8. Năm PCAP của KB02.*
 
 ### 4. Lưu lượng bình thường
@@ -159,8 +157,8 @@ Lọc các luật ET SCAN liên quan đến UDP:
 - **Đang bật:** chỉ có luật cho công cụ hoặc dịch vụ cụ thể (Amap, Sipvicious và các SIP scanner khác, TFTP, UPnP 1900, Mirai UDP…). **Không có luật nhận diện chung kiểu quét `nmap -sU`.**
 - **Đang tắt:** chỉ có NBTStat và luật cho crawler.
 
-![Luật ET SCAN liên quan UDP đang bật](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/02-et-open-udp-rules-enabled.png)
-![Luật ET SCAN liên quan UDP đang bật (tiếp) và bị tắt](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/03-et-open-udp-rules-enabled-disabled.png)
+![Luật ET SCAN liên quan UDP đang bật](screenshots/02-et-open-udp-rules-enabled.png)
+![Luật ET SCAN liên quan UDP đang bật (tiếp) và bị tắt](screenshots/03-et-open-udp-rules-enabled-disabled.png)
 *Hình 9–10. Các luật ET SCAN có liên quan đến UDP trong ET Open.*
 
 ### 2. Lệnh chạy
@@ -184,7 +182,7 @@ Run 1 trên lưu lượng bình thường **dùng lại kết quả của KB01**
 | kb02_run4 | **0** | 3 × 2200075 |
 | kb02_run5 | **1 × SID 2019102** | 3 × 2200075 |
 
-![Run 1 – tóm tắt](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/06-run1-summary.png)
+![Run 1 – tóm tắt](screenshots/06-run1-summary.png)
 *Hình 11. Run 1 trên 5 PCAP KB02.*
 
 Cảnh báo 2200075 là gói DNS trả lời từ Victim. Lỗi checksum xuất hiện do checksum offload khi bắt gói ngay trên Victim, cùng nguyên nhân như ở KB01, và không liên quan đến hành vi quét.
@@ -199,7 +197,7 @@ alert udp any any -> $HOME_NET 1900 (msg:"ET DOS Possible SSDP Amplification Sca
   threshold: type both,track by_src,count 2,seconds 60; ... sid:2019102; rev:1; ...)
 ```
 
-![Luật 2019102](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/07-sid2019102-rule.png)
+![Luật 2019102](screenshots/07-sid2019102-rule.png)
 *Hình 12. Nội dung luật SID 2019102.*
 
 Khi quét `-sU`, nmap gửi đúng gói SSDP này vào cổng 1900. Luật chỉ cảnh báo khi có **từ 2 gói như vậy trong 60 giây**. Số gói tới cổng 1900 trong từng PCAP:
@@ -212,7 +210,7 @@ Khi quét `-sU`, nmap gửi đúng gói SSDP này vào cổng 1900. Luật chỉ
 | run4 | 1 | Không | 0 |
 | run5 | 5 | Có | 1 |
 
-![Số gói tới cổng 1900](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/08-port1900-count.png)
+![Số gói tới cổng 1900](screenshots/08-port1900-count.png)
 *Hình 13. Số gói UDP gửi tới cổng 1900 trong từng PCAP.*
 
 Như vậy, ET Open phát hiện được hay không **phụ thuộc vào việc nmap có gửi lại gói tới cổng 1900 hay không**, tức là phụ thuộc vào cổng 1900 có nằm trong dải quét và có nhận phản hồi ICMP kịp hay không. Nó không dựa trên hành vi quét nhiều cổng UDP. Lần quét theo đúng `attack.sh` (run1) **không bị phát hiện**. Một cuộc quét không chạm tới cổng 1900 cũng sẽ không bị phát hiện.
@@ -236,7 +234,7 @@ Quét UDP để lại hai dấu hiệu hành vi. Hai dấu hiệu này đã đư
 | run5 | **1** | 13 |
 | 12 file benign | **0** | **0** |
 
-![Đếm dấu hiệu trên 17 PCAP](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/09-empty-udp-icmp-count.png)
+![Đếm dấu hiệu trên 17 PCAP](screenshots/09-empty-udp-icmp-count.png)
 *Hình 14. Số gói UDP rỗng và ICMP port unreachable trong 5 PCAP tấn công và 12 PCAP bình thường.*
 
 - Lưu lượng UDP bình thường như DNS **luôn có dữ liệu**, nên gói UDP rỗng là dấu hiệu đặc trưng của quét.
@@ -267,7 +265,7 @@ for f in kb02_run*.pcap benign_*.pcap; do
 done
 ```
 
-![Tạo luật, kiểm tra cú pháp và chạy Run 2](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/10-run2-rule-and-test.png)
+![Tạo luật, kiểm tra cú pháp và chạy Run 2](screenshots/10-run2-rule-and-test.png)
 *Hình 15. Tạo `custom-rule-kb02.rules`, kiểm tra cú pháp (`successfully loaded`) và chạy Run 2 trên 17 PCAP.*
 
 ### 4. Kết quả
@@ -280,7 +278,7 @@ done
 | run4 (T4, 200 cổng, 180 s) | – | 3 | 3 | ✅ |
 | run5 (10 cổng) | 1 | **–** | 1 | ✅ (chỉ nhờ 9000202) |
 
-![Run 2 – tóm tắt](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/11-run2-summary.png)
+![Run 2 – tóm tắt](screenshots/11-run2-summary.png)
 *Hình 16. Run 2 trên 12 PCAP bình thường và 5 PCAP KB02 (đã ẩn cảnh báo checksum).*
 
 ### 5. Độ trễ phát hiện
@@ -296,7 +294,7 @@ done
 | run5 | 16:53:26.042 | 16:53:30.457 | 9000202 | 4,42 s |
 | **Trung bình** | | | | **≈ 2,94 s** |
 
-![Bằng chứng và độ trễ](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/02-nmap-udp-scan/screenshots/12-evidence-and-latency.png)
+![Bằng chứng và độ trễ](screenshots/12-evidence-and-latency.png)
 *Hình 17. Số dòng các file trích sự kiện, thời điểm gói quét đầu tiên và thời điểm các cảnh báo (ngày 03/11/2026, đồng hồ Victim).*
 
 Nhận xét:
@@ -371,8 +369,3 @@ Nhận xét:
 | `benign-eve-excerpt-run2.json` | Run 2 trên lưu lượng bình thường, đã lọc checksum (223 dòng, đều là SID 2034636) |
 | `summary-run1.txt`, `summary-run2.txt` | Bảng tóm tắt cảnh báo |
 | `screenshots/` | Ảnh minh chứng |
-
-
-## Tệp nguồn và minh chứng gốc
-
-Thư mục nguồn trong repository ban đầu: [`02-nmap-udp-scan`](https://github.com/phanyen206/Suricata/tree/main/scenarios/02-nmap-udp-scan). Các tệp nhị phân như PCAP, ảnh chụp và tài liệu DOCX (nếu có) hiện vẫn được giữ tại repository nguồn; README này liên kết về nguồn để người đọc tải/xem, không thay thế bằng dữ liệu giả.
