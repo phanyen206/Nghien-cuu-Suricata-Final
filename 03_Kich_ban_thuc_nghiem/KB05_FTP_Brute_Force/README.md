@@ -92,8 +92,8 @@ sudo tcpdump -nn -A -r /tmp/kb07-final-2.pcap \
 ```
 
 Kết quả thực nghiệm ghi nhận 68 gói tin và 6 phản hồi FTP `530 Login incorrect`.
-<img width="1202" height="281" alt="image" src="https://github.com/user-attachments/assets/4498e24e-e476-4c5a-b276-2993a2323099" />
 
+<img width="1202" height="281" alt="image" src="https://github.com/user-attachments/assets/4498e24e-e476-4c5a-b276-2993a2323099" />
 
 ### Bước 4. Run 1 – Phân tích bằng ET Open
 
@@ -131,7 +131,9 @@ Run 1 ghi nhận 31 cảnh báo, gồm:
 - 1 cảnh báo SID 2002383 – ET SCAN Potential FTP Brute-Force attempt response.
 
 Trong đó, SID 2002383 là cảnh báo liên quan trực tiếp đến dấu hiệu FTP Brute Force.
+
 <img width="1210" height="76" alt="image" src="https://github.com/user-attachments/assets/9312d4bc-7e3d-4d4e-b9ad-510f539d76a7" />
+
 <img width="1204" height="58" alt="image" src="https://github.com/user-attachments/assets/79334450-45bf-4bd1-bb9f-d09c50535831" />
 
 ### Bước 5. Run 2 – Phân tích bằng ET Open kết hợp luật tùy chỉnh
@@ -170,6 +172,7 @@ Run 2 ghi nhận 32 cảnh báo, gồm:
 - 30 cảnh báo SID 2200074.
 - 1 cảnh báo SID 2002383.
 - 1 cảnh báo SID 1000005 – LAB BRUTE FTP login failures.
+
 <img width="1206" height="256" alt="image" src="https://github.com/user-attachments/assets/6e9aea86-50bd-4b3e-bd93-d7f4a29c62aa" />
 
 
@@ -222,7 +225,9 @@ sudo jq -r 'select(.event_type=="alert" and .alert.signature_id==1000005) |
 ```
 
 Kết quả thực nghiệm: PCAP Benign gồm 32 gói tin. Suricata ghi nhận 18 cảnh báo, tất cả thuộc SID 2200074. Không xuất hiện cảnh báo SID 1000005.
+
 <img width="931" height="467" alt="image" src="https://github.com/user-attachments/assets/ca7d9b36-2646-46e4-b26c-a87ef4018c75" />
+
 <img width="1209" height="89" alt="image" src="https://github.com/user-attachments/assets/79958484-f615-4a19-80b7-cd89907a8479" />
 
 ## 4. Tổng hợp kết quả
