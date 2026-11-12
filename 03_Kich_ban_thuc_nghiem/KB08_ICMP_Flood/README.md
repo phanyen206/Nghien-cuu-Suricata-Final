@@ -83,7 +83,7 @@ nmcli -f ipv4.method,ipv4.addresses,ipv4.gateway,connection.autoconnect con show
 ping -c 4 -I 192.168.100.10 192.168.100.20
 ```
 
-![Attacker ping và IP tĩnh](scenarios/10-icmp-flood/02-cau-hinh-attacker.png)
+![Attacker ping và IP tĩnh](scenarios/02-cau-hinh-attacker.png)
 
 *Hình 1. Attacker đặt `192.168.100.10/24` trên ens37 và ping tới Victim thành công (0% packet loss).*
 
