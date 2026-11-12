@@ -34,7 +34,7 @@ ip -br addr
 ping -c 4 -I 192.168.100.10 192.168.100.20  # chạy từ Attacker
 ```
 
-![Cấu hình và kết nối mạng lab](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/11-ket-noi-mang.png)
+![Cấu hình và kết nối mạng lab](images/11-ket-noi-mang.png)
 
 ## 4. Xác minh bộ luật đối chứng trên Victim
 
@@ -66,7 +66,7 @@ cd ~/scenarios/11-tcp-syn-flood
 sudo suricata -T -c /etc/suricata/suricata.yaml -s custom-rule.rules
 ```
 
-![Kiểm tra cú pháp luật riêng](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/02-kiem-tra-luat.png)
+![Kiểm tra cú pháp luật riêng](images/02-kiem-tra-luat.png)
 
 ## 6. Chuẩn bị lưu lượng và ghi PCAP
 
@@ -94,7 +94,7 @@ tcpdump -nn -r sample_group.pcap 'tcp[13] & 18 == 2' 2>/dev/null | wc -l
 
 Mẫu thực nghiệm ghi được **100 gói SYN**, nguồn `192.168.100.10`, đích `192.168.100.20:80`. Máy đích không có dịch vụ LISTEN tại cổng 80 trong phép thử này, nên không suy luận rằng đã hình thành các kết nối half-open.
 
-![PCAP 100 gói TCP SYN](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/03-pcap-100-syn.png)
+![PCAP 100 gói TCP SYN](images/03-pcap-100-syn.png)
 
 ### 6.2. Mẫu HTTP bình thường `normal_group.pcap`
 
@@ -128,7 +128,7 @@ tcpdump -nn -r normal_group.pcap -c 15
 
 Mẫu ghi nhận **11 gói TCP**, có bắt tay SYN → SYN-ACK → ACK, yêu cầu HTTP GET và phản hồi HTTP 200 OK. Đây là mẫu **HTTP một phiên**, không đại diện mọi lưu lượng bình thường.
 
-![Phiên TCP HTTP bình thường](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/06-http-normal.png)
+![Phiên TCP HTTP bình thường](images/06-http-normal.png)
 
 ## 7. Các lần kiểm thử Suricata
 
@@ -144,7 +144,7 @@ jq -s '[.[] | select(.event_type=="alert")] | length' run1_group/eve.json
 
 **Quan sát:** 100 gói, **0 alert**.
 
-![Run 1 - 0 alert](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/04-run1-et-open.png)
+![Run 1 - 0 alert](images/04-run1-et-open.png)
 
 ### Run 2 – SYN + luật riêng SID 1000010
 
@@ -156,7 +156,7 @@ jq -s '[.[] | select(.event_type=="alert" and .alert.signature_id==1000010)] | l
 
 **Quan sát:** 100 gói, **2 alert SID 1000010**.
 
-![Run 2 - 2 alert SID 1000010](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/05-run2-custom.png)
+![Run 2 - 2 alert SID 1000010](images/05-run2-custom.png)
 
 ### Run 3 – HTTP bình thường + luật đối chứng
 
@@ -169,9 +169,9 @@ jq -r 'select(.event_type=="alert") | [.alert.signature_id,.alert.signature] | @
 
 **Quan sát:** 11 gói, **5 alert**, gồm **4 × SID 2200074** (`TCPv4 invalid checksum`) và **1 × SID 2210044** (`STREAM Packet with invalid timestamp`). Đây là các cảnh báo giao thức, **không phải SYN Flood**.
 
-![Run 3 - 5 alert giao thức](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/07-run3-et-open.png)
+![Run 3 - 5 alert giao thức](images/07-run3-et-open.png)
 
-![Phân tích tên cảnh báo Run 3](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/08-phan-tich-canh-bao.png)
+![Phân tích tên cảnh báo Run 3](images/08-phan-tich-canh-bao.png)
 
 ### Kiểm tra checksum bổ sung (không thay thế Run 3)
 
@@ -183,7 +183,7 @@ jq -r 'select(.event_type=="alert") | .alert.signature' run3_checksum_test/eve.j
 
 **Quan sát:** vẫn 5 alert, gồm **4 cảnh báo invalid checksum** và **1 cảnh báo ET INFO Python SimpleHTTP ServerBanner**. `-k none` không loại bỏ nhất thiết các signature kiểm tra checksum riêng và có thể thay đổi hướng giải mã luồng. Đây là phép kiểm tra phụ, **không được sửa số liệu Run 3 thành 0**.
 
-![Kiểm tra checksum bổ sung](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/09-kiem-tra-checksum.png)
+![Kiểm tra checksum bổ sung](images/09-kiem-tra-checksum.png)
 
 ### Run 4 – HTTP bình thường + luật riêng
 
@@ -196,7 +196,7 @@ jq -r 'select(.event_type=="alert") | [.alert.signature_id,.alert.signature] | @
 
 **Quan sát:** **0 alert riêng SID 1000010**, nhưng **5 alert giao thức khác** như Run 3.
 
-![Run 4 - 0 alert riêng](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/11-syn-flood/10-run4-custom.png)
+![Run 4 - 0 alert riêng](images/10-run4-custom.png)
 
 ## 8. Bảng tổng hợp và đánh giá
 
