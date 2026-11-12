@@ -1,0 +1,7 @@
+tap,so_phut_tan_cong,DT_HANH_VI,DT_HANH_VI+WINDOW,DT_KHONG_KHOI_LUONG,DT_CHI_WINDOW,SUR_run1,SUR_run1b,SUR_run2,ET_DOS_run1
+scan_A,6,(train),(train),(train),(train),4,4,5,0
+scan_B,3,3,3,3,3,3,3,3,0
+scan_C,2,2,2,2,2,2,2,2,0
+scan_U,5,3,3,0,0,0,0,4,0
+scan_small,13,0,0,0,5,3,6,7,0
+ddos,21,21,21,0,0,0,0,0,20
