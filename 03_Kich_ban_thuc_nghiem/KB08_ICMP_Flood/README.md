@@ -87,7 +87,7 @@ ping -c 4 -I 192.168.100.10 192.168.100.20
 
 *Hình 1. Attacker đặt `192.168.100.10/24` trên ens37 và ping tới Victim thành công (0% packet loss).*
 
-![Victim ping và IP tĩnh](scenarios/10-icmp-flood/01-cau-hinh-victim.png)
+![Victim ping và IP tĩnh](scenarios/01-cau-hinh-victim.png)
 
 *Hình 2. Victim đặt `192.168.100.20/24` trên ens37 và ping ngược đến Attacker thành công.*
 
@@ -120,15 +120,15 @@ sha256sum /var/lib/suricata/rules/suricata.rules
 
 **Giới hạn xác minh nguồn:** Các dấu hiệu trên phù hợp với bộ luật Emerging Threats (ET) trên máy Victim và cơ chế mặc định của `suricata-update`, nhưng không đủ để chứng minh tuyệt đối nguồn gốc của từng chữ ký hoặc thời điểm tải. Không tự ý cập nhật luật giữa các lần đối chứng vì có thể thay đổi kết quả.
 
-![Cấu hình và nguồn luật](scenarios/10-icmp-flood/10-xac-minh-cau-hinh-etopen.png)
+![Cấu hình và nguồn luật](scenarios/10-xac-minh-cau-hinh-etopen.png)
 
 *Hình 3. `suricata.yaml` trỏ tới file `suricata.rules`, không có SID luật riêng trong file đối chứng.*
 
-![Kiểm tra nạp luật](scenarios/10-icmp-flood/11-suricata-nap-luat.png)
+![Kiểm tra nạp luật](scenarios/11-suricata-nap-luat.png)
 
 *Hình 4. Suricata nạp thành công 53.307 luật, không có luật lỗi hoặc bị bỏ qua.*
 
-![Dấu hiệu ET và SHA256](scenarios/10-icmp-flood/12-chu-ky-et-va-sha256.png)
+![Dấu hiệu ET và SHA256](scenarios/12-chu-ky-et-va-sha256.png)
 
 *Hình 5. Các chữ ký ET hiển thị trong file luật và việc tính SHA-256 để định danh bộ luật thử nghiệm.*
 
@@ -177,7 +177,7 @@ tcpdump -nn -r sample_group.pcap 'icmp[icmptype] == icmp-echo' 2>/dev/null | wc 
 
 **Đã quan sát:** file có 100 gói ICMP Echo Request từ `192.168.100.10` đến `192.168.100.20`. Đây là mẫu lưu lượng ICMP tần suất cao có giới hạn, không phải bằng chứng tài nguyên Victim đã bị cạn kiệt.
 
-![PCAP nhóm](scenarios/10-icmp-flood/04-pcap-nhom.png)
+![PCAP nhóm](scenarios/04-pcap-nhom.png)
 
 *Hình 6. `sample_group.pcap` thể hiện đúng IP nguồn và đích.*
 
@@ -203,7 +203,7 @@ tcpdump -nn -r normal_group.pcap -c 5
 
 **Đã quan sát:** 5 Echo Request với khoảng cách xấp xỉ 1 giây/gói.
 
-![Ping bình thường](scenarios/10-icmp-flood/07-normal-nhom.png)
+![Ping bình thường](scenarios/07-normal-nhom.png)
 
 *Hình 7. `normal_group.pcap` có 5 Echo Request theo mô hình IP nhóm.*
 
@@ -222,7 +222,7 @@ jq -s '[.[] | select(.event_type=="alert")] | length' run1_group/eve.json
 
 **Quan sát:** Suricata đọc **100 gói (9.800 bytes)**; kết quả **0 cảnh báo** với cấu hình luật đối chứng của máy Victim.
 
-![Run1](scenarios/10-icmp-flood/05-run1-etopen.png)
+![Run1](scenarios/05-run1-etopen.png)
 
 *Hình 8. Run 1 – 0 cảnh báo trên mẫu 100 gói ICMP.*
 
@@ -238,7 +238,7 @@ grep -c '"signature_id":1000006' run2_group/eve.json
 
 **Quan sát:** Suricata đọc **100 gói (9.800 bytes)**; luật riêng `SID 1000006` sinh **73 cảnh báo**.
 
-![Run2](scenarios/10-icmp-flood/06-run2-luat-rieng.png)
+![Run2](scenarios/06-run2-luat-rieng.png)
 
 *Hình 9. Run 2 – 73 sự kiện cảnh báo theo luật riêng rev:2.*
 
@@ -252,7 +252,7 @@ jq -s '[.[] | select(.event_type=="alert")] | length' run3_group/eve.json
 
 **Quan sát:** Suricata đọc **5 gói (490 bytes)**; **0 cảnh báo**.
 
-![Run3](scenarios/10-icmp-flood/08-run3-etopen-binh-thuong.png)
+![Run3](scenarios/08-run3-etopen-binh-thuong.png)
 
 *Hình 10. Run 3 – 0 cảnh báo trên ping bình thường với luật đối chứng.*
 
@@ -266,7 +266,7 @@ grep -c '"signature_id":1000006' run4_group/eve.json
 
 **Quan sát:** Suricata đọc **5 gói (490 bytes)**; **0 cảnh báo SID 1000006**.
 
-![Run4](scenarios/10-icmp-flood/09-run4-luat-rieng-binh-thuong.png)
+![Run4](scenarios/09-run4-luat-rieng-binh-thuong.png)
 
 *Hình 11. Run 4 – 0 cảnh báo của luật riêng đối với mẫu ping thông thường.*
 
