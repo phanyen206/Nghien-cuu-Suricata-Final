@@ -1,6 +1,4 @@
-> **Hướng dẫn người đọc:** README này mô tả mục tiêu, môi trường, thứ tự tái lập và cách kiểm tra kết quả. Hãy đọc phần môi trường và lệnh trước khi chạy script; cập nhật IP/interface theo lab của bạn. Chỉ chạy trong mạng ảo được phép.
-
-# KB03 – Phát hiện dò hệ điều hành, phiên bản dịch vụ và script NSE của nmap (nmap -O -sV --script)
+# KB05 – Phát hiện dò hệ điều hành, phiên bản dịch vụ và script NSE của nmap (nmap -O -sV --script)
 
 | Mục | Nội dung |
 |---|---|
@@ -99,32 +97,32 @@ Nhận xét:
 
 **run1:** `-O -sV --script http-title`, đúng `attack.sh`
 
-![run1 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run1-attacker.png)
-![run1 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run1-victim.png)
+![run1 – Attacker](screenshots/kb05-run1-attacker.png)
+![run1 – Victim](screenshots/kb05-run1-victim.png)
 *Hình 1. run1: nmap nhận diện đầy đủ phiên bản dịch vụ và in TCP/IP fingerprint; PCAP có 1047 SYN, 5 UDP, 5 request NSE.*
 
 **run2:** chỉ `-O`
 
-![run2 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run2-attacker.png)
-![run2 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run2-victim.png)
+![run2 – Attacker](screenshots/kb05-run2-attacker.png)
+![run2 – Victim](screenshots/kb05-run2-victim.png)
 *Hình 2. run2: chỉ dò hệ điều hành; có 5 gói UDP 300 byte, không có request NSE.*
 
 **run3:** chỉ `-sV`
 
-![run3 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run3-attacker.png)
-![run3 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run3-victim.png)
+![run3 – Attacker](screenshots/kb05-run3-attacker.png)
+![run3 – Victim](screenshots/kb05-run3-victim.png)
 *Hình 3. run3: chỉ dò phiên bản trên 3 cổng; vẫn có 4 request mang User-Agent NSE.*
 
 **run4:** `-A -T4`
 
-![run4 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run4-attacker.png)
-![run4 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run4-victim.png)
+![run4 – Attacker](screenshots/kb05-run4-attacker.png)
+![run4 – Victim](screenshots/kb05-run4-victim.png)
 *Hình 4. run4: chế độ aggressive; 29 request NSE, 5 gói UDP 300 byte, có traceroute.*
 
 **run5:** chỉ script NSE trên cổng 8000
 
-![run5 – Attacker](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run5-attacker.png)
-![run5 – Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/kb05-run5-victim.png)
+![run5 – Attacker](screenshots/kb05-run5-attacker.png)
+![run5 – Victim](screenshots/kb05-run5-victim.png)
 *Hình 5. run5: 0,72 s, chỉ 19 gói và 1 request NSE. Kèm danh sách 5 PCAP KB05.*
 
 ### 4. Lưu lượng bình thường
@@ -144,7 +142,7 @@ alert http $HOME_NET any -> any any (msg:"ET SCAN Possible Nmap User-Agent Obser
 alert http $EXTERNAL_NET any -> $HOME_NET any (msg:"ET SCAN Nmap Scripting Engine User-Agent Detected (Nmap Scripting Engine)"; ... sid:2009358; ...)
 ```
 
-![Các luật ET Open liên quan](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/01-et-open-nmap-rules.png)
+![Các luật ET Open liên quan](screenshots/01-et-open-nmap-rules.png)
 *Hình 6. Bốn luật ET Open liên quan đến nmap OS detection và NSE. Cả 4 luật đều đang bật.*
 
 | SID | Nhắm vào | Chiều áp dụng | Áp dụng được cho Attacker nội bộ? |
@@ -173,7 +171,7 @@ done
 | run4 | `-A` | **29** | 5 + 5 | 36 × 2034636, 262 × checksum, 1 × 2260002 | ✅ |
 | run5 | chỉ NSE | **1** | – | 1 × 2034636, 7 × checksum | ✅ |
 
-![Run 1 – tóm tắt](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/02-run1-summary.png)
+![Run 1 – tóm tắt](screenshots/02-run1-summary.png)
 *Hình 7. Run 1 trên 5 PCAP KB05.*
 
 Run 1 trên lưu lượng bình thường **dùng lại kết quả KB01**, vì cấu hình giữ nguyên.
@@ -202,7 +200,7 @@ Run 1 trên lưu lượng bình thường **dùng lại kết quả KB01**, vì 
 | run5 | 0 | 1 | 1 |
 | 12 file benign | **0** | **0** | **0** |
 
-![Đếm dấu hiệu trên 17 PCAP](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/03-signal-count.png)
+![Đếm dấu hiệu trên 17 PCAP](screenshots/03-signal-count.png)
 *Hình 8. Số gói UDP 300 byte và số lần xuất hiện chuỗi `Nmap` trên 17 PCAP.*
 
 Hai dấu hiệu phủ kín cả 5 lần quét, và lưu lượng bình thường không có dấu hiệu nào. Dấu hiệu User-Agent đã được luật ET Open 2024364 xử lý tốt, nên chỉ cần bổ sung **một luật** cho gói dò hệ điều hành.
@@ -232,7 +230,7 @@ for f in kb05_run*.pcap benign_*.pcap; do
 done
 ```
 
-![Tạo luật, kiểm tra và chạy Run 2](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/04-run2-rule-and-test.png)
+![Tạo luật, kiểm tra và chạy Run 2](screenshots/04-run2-rule-and-test.png)
 *Hình 9. Tạo `custom-rule-kb05.rules`, kiểm tra cú pháp (`successfully loaded`) và chạy Run 2 trên 17 PCAP.*
 
 ### 4. Kết quả
@@ -247,7 +245,7 @@ done
 
 Tất cả cảnh báo 2024364 và 9000501 đều có chiều **192.168.100.10 → 192.168.100.20**.
 
-![Run 2 – tóm tắt](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/05-run2-summary.png)
+![Run 2 – tóm tắt](screenshots/05-run2-summary.png)
 *Hình 10. Run 2 trên 12 PCAP bình thường và 5 PCAP KB05 (đã ẩn cảnh báo checksum và banner).*
 
 - **5/5** lần quét bị phát hiện, so với **4/5** ở Run 1.
@@ -267,7 +265,7 @@ Tất cả cảnh báo 2024364 và 9000501 đều có chiều **192.168.100.10 �
 | run5 | 21:17:52.784 | **21:17:52.799** | – | 0,02 s |
 | **Trung bình** | | | | **≈ 5,41 s** |
 
-![Bằng chứng và độ trễ](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/05-nmap-nse-os-detect/screenshots/06-evidence-latency.png)
+![Bằng chứng và độ trễ](screenshots/06-evidence-latency.png)
 *Hình 11. Số dòng các file trích sự kiện, gói đầu tiên của Attacker (gói SYN, `win 1024`) và thời điểm cảnh báo sớm nhất của từng luật (ngày 04/11/2026, đồng hồ Victim).*
 
 Độ trễ lớn hơn KB01–KB04, vì nmap luôn **quét cổng trước** (giai đoạn này chỉ có gói SYN) rồi mới dò hệ điều hành và dịch vụ. Hai luật của KB05 chỉ kích hoạt ở giai đoạn sau. Run5 chỉ quét 1 cổng rồi chạy script ngay, nên gần như không có độ trễ. Giai đoạn quét SYN ban đầu có thể được phát hiện sớm hơn nhờ luật SYN scan của KB01 (SID 9000101), nhưng kịch bản này **chưa kiểm thử** việc kết hợp hai luật.
@@ -340,8 +338,3 @@ Khác với KB01–KB04, ở KB05 ET Open đã làm được phần lớn công 
 | `benign-eve-excerpt-run2.json` | Run 2 trên lưu lượng bình thường, đã lọc checksum (223 dòng, đều là SID 2034636) |
 | `summary-run1.txt`, `summary-run2.txt` | Bảng tóm tắt cảnh báo |
 | `screenshots/` | Ảnh minh chứng |
-
-
-## Tệp nguồn và minh chứng gốc
-
-Thư mục nguồn trong repository ban đầu: [`05-nmap-nse-os-detect`](https://github.com/phanyen206/Suricata/tree/main/scenarios/05-nmap-nse-os-detect). Các tệp nhị phân như PCAP, ảnh chụp và tài liệu DOCX (nếu có) hiện vẫn được giữ tại repository nguồn; README này liên kết về nguồn để người đọc tải/xem, không thay thế bằng dữ liệu giả.
