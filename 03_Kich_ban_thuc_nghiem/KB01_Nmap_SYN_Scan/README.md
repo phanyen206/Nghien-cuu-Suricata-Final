@@ -79,7 +79,7 @@ Số lượng cảnh báo **không** được dùng làm tiêu chí so sánh, v�
 
 Máy Attacker có IP 192.168.100.10 trên `ens33` và ping thành công đến Victim (4/4 gói, mất 0%).
 
-![Hình 1. Attacker: kiểm tra IP và ping tới Victim](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/01-nmap-syn-scan/screenshots/01-attacker-ip-ping.png)
+![Hình 1. Attacker: kiểm tra IP và ping tới Victim](screenshots/01-attacker-ip-ping.png)
 *Hình 1. Attacker: `ip -br addr` và `ping` tới Victim. Ảnh chụp ngày 31/10, trong buổi chuẩn bị môi trường.*
 
 ![Hình 2. Attacker: bảng định tuyến](https://raw.githubusercontent.com/phanyen206/Suricata/main/scenarios/01-nmap-syn-scan/screenshots/03-attacker-ip-route.png)
