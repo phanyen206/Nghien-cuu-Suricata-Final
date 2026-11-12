@@ -1,6 +1,6 @@
 > **Hướng dẫn người đọc:** README này mô tả mục tiêu, môi trường, thứ tự tái lập và cách kiểm tra kết quả. Hãy đọc phần môi trường và lệnh trước khi chạy script; cập nhật IP/interface theo lab của bạn. Chỉ chạy trong mạng ảo được phép.
 
-# Kịch bản 11 – Kiểm thử phát hiện lưu lượng TCP SYN tần suất cao bằng Suricata
+# Kịch bản 9 – Kiểm thử phát hiện lưu lượng TCP SYN tần suất cao bằng Suricata
 
 ## 1. Mục tiêu và phạm vi
 
