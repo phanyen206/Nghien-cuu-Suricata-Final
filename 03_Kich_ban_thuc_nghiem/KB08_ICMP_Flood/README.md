@@ -1,6 +1,6 @@
 > **Hướng dẫn người đọc:** README này mô tả mục tiêu, môi trường, thứ tự tái lập và cách kiểm tra kết quả. Hãy đọc phần môi trường và lệnh trước khi chạy script; cập nhật IP/interface theo lab của bạn. Chỉ chạy trong mạng ảo được phép.
 
-# KỊCH BẢN 10 – PHÁT HIỆN LƯU LƯỢNG ICMP FLOOD BẰNG SURICATA
+# KỊCH BẢN 8 – PHÁT HIỆN LƯU LƯỢNG ICMP FLOOD BẰNG SURICATA
 
 > **Phiên bản báo cáo:** thực nghiệm trên mạng Host-only của nhóm (`192.168.100.10 → 192.168.100.20`), kết quả **0 – 73 – 0 – 0**.  
 > **Công cụ:** Suricata 8.0.3; phân tích PCAP ngoại tuyến.  
